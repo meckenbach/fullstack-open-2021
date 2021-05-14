@@ -1,0 +1,21 @@
+{
+  "name": "blog",
+  "version": "0.0.1",
+  "main": "index.js",
+  "author": "Maximilian Eckenbach",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^7.26.0",
+    "nodemon": "^2.0.7"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "start:dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^9.0.2",
+    "express": "^4.17.1",
+    "mongoose": "^5.12.9"
+  }
+}

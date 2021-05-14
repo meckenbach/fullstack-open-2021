@@ -27,14 +27,20 @@ const App = () => {
     if (!duplicatePerson) {
       personService
         .create(newPerson)
-        .then(person => {
-          setPersons([...persons, person])
+        .then(createdPerson => {
+          setPersons([...persons, createdPerson])
           setNewName('')
           setNewNumber('')
 
           setSuccessMessage(`Added ${newName}`)
           setTimeout(() => {
             setSuccessMessage(null)
+          }, 3000)
+        })
+        .catch(err => {
+          setErrorMessage(err.response.data.error)
+          setTimeout(() => {
+            setErrorMessage(null)
           }, 3000)
         })
       return
@@ -54,7 +60,7 @@ const App = () => {
           }, 3000)
         })
         .catch (err => {
-          setErrorMessage(`Information of ${newName} has already been removed from server`)
+          setErrorMessage(err.response.data.error)
           setTimeout(() => {
             setErrorMessage(null)
           }, 3000)

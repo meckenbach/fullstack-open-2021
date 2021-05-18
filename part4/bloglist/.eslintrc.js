@@ -25,6 +25,14 @@ module.exports = {
     'semi': [
       'error',
       'never'
+    ],
+    'eqeqeq': [
+      'error',
+      'always'
+    ],
+    'object-curly-spacing': [
+      'error',
+      'always'
     ]
   }
 }

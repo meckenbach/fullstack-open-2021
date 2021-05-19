@@ -20,7 +20,7 @@ const mostBlogs = flow(
   map((blogsCount, author) => ({ author, blogs: blogsCount })),
   maxBy('blogs'),
   defaultTo([])
-) 
+)
 
 const mostLikes = flow(
   groupBy('author'),

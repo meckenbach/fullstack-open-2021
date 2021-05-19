@@ -1,31 +1,48 @@
 const express = require('express')
+const middleware = require('../utils/middleware')
 const Blog = require('../models/blog')
 
 const blogsRouter = express.Router()
 
-blogsRouter.get('/', async (req, res) => {
-  const blog = await Blog.find({})
-  return res.json(blog)
+blogsRouter.get('/', async (request, response) => {
+  const blogs = await Blog
+    .find({})
+    .populate('user', { username: 1, name: 1 })
+  return response.json(blogs)
 })
 
-blogsRouter.post('/', async (req, res, next) => {
-  const blog = new Blog(req.body)
+blogsRouter.post('/', middleware.userExtractor, async (request, response, next) => {
   try {
-    const savedBlog = await blog.save()
-    res.status(201)
-    res.json(savedBlog)
+    const savedBlog = await new Blog({ ...request.body, user: request.user._id })
+      .save()
+
+    response
+      .status(201)
+      .json(savedBlog)
   } catch (err) {
     next(err)
   }
 })
 
-blogsRouter.delete('/:id', async (req, res, next) => {
+blogsRouter.delete('/:id', middleware.userExtractor, async (request, response, next) => {
   try {
-    const result = await Blog.findByIdAndDelete(req.params.id)
-    if (result) {
-      res.status(204).end()
+    const blog = await Blog.findById(request.params.id)
+
+    if (!blog) {
+      return response
+        .status(404)
+        .end()
+    }
+
+    if (blog.user.toString() === request.user._id.toString()) {
+      await Blog.findByIdAndDelete(blog._id)
+      response
+        .status(204)
+        .end()
     } else {
-      res.status(404).end()
+      response
+        .status(401)
+        .json({ error: 'invalid token' })
     }
   } catch (err) {
     next(err)

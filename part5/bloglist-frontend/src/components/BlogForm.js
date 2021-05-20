@@ -32,7 +32,7 @@ const BlogForm = ({ onAdd }) => {
           <input id="url" onChange={(event) => setUrl(event.target.value)} value={url} required />
         </div>
         <div>
-          <input type="submit" />
+          <button type="submit">create</button>
         </div>
       </form>
     </div>

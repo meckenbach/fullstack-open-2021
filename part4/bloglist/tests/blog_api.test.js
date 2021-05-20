@@ -182,15 +182,25 @@ describe('updating a blog', () => {
     savedBlog = response.body
   })
 
-  test('succeeds with valid "id"', async () => {
+  test('succeeds with valid id and token', async () => {
     const response = await api
       .put(`/api/blogs/${savedBlog.id}`)
       .send({ likes: 10 })
+      .set({ 'Authorization': `bearer ${token}` })
 
     const updatedBlog = response.body
 
     expect(updatedBlog.likes).toBe(10)
   })
+
+  test('fails with status code "401" if no token is sent', async () => {
+    await api
+      .put(`/api/blogs/${savedBlog.id}`)
+      .send({ likes: 10 })
+      .expect(401)
+  })
+
+
 })
 
 describe('deleting a blog', () => {

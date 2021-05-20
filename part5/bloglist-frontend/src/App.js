@@ -72,7 +72,8 @@ const App = () => {
 
   const handleLike = async (blogId, newLikes) => {
     try {
-      await blogService.update(blogId, { likes: newLikes }, user.token)
+      const updatedBlog = await blogService.update(blogId, { likes: newLikes }, user.token)
+      setBlogs(blogs.map((blog) => blog.id === updatedBlog.id ? updatedBlog : blog))
     } catch (err) {
       setErrorMessage(err.response.data.error)
       setTimeout(() => setErrorMessage(null), 5000)
@@ -92,7 +93,10 @@ const App = () => {
           <BlogForm onAdd={handleAddBlog} />
         </Togglable>
         {
-          blogs.map(blog => <Blog key={blog.id} blog={blog} onLike={handleLike} />)
+          blogs
+            // sort by likes in descending order
+            .sort((blog1, blog2) => -(blog1.likes - blog2.likes))
+            .map(blog => <Blog key={blog.id} blog={blog} onLike={handleLike} />)
         }
       </div>
     )

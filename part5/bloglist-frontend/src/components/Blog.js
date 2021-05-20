@@ -3,7 +3,6 @@ import React, { useState } from 'react'
 
 const Blog = ({ blog, onLike }) => {
   const [viewDetailed, setViewDetailed] = useState(false)
-  const [likes, setLikes] = useState(blog.likes)
 
   const blogStyle = {
     border: '1px solid black',
@@ -20,15 +19,13 @@ const Blog = ({ blog, onLike }) => {
   const handleLike = (event) => {
     event.preventDefault()
 
-    const newLikes = likes + 1
-    setLikes(newLikes)
-    onLike(blog.id, newLikes)
+    onLike(blog.id, blog.likes + 1)
   }
 
   const details = () => (
     <div>
       <div>{blog.url}</div>
-      <div>likes {likes} <button onClick={handleLike}>like</button></div>
+      <div>likes {blog.likes} <button onClick={handleLike}>like</button></div>
       <div>{blog.user.name}</div>
     </div>
   )

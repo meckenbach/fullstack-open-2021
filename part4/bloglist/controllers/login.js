@@ -2,7 +2,7 @@ const loginRouter = require('express').Router()
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const { pick } = require('lodash/fp')
-const User = require('../models/User')
+const User = require('../models/user')
 
 loginRouter.post('/', async (request, response) => {
   const { username, password } = request.body

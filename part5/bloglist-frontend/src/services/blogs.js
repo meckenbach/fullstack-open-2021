@@ -7,15 +7,17 @@ const getAll = () => {
 }
 
 const create = async ({ title, author, url }, token) => {
-  const config = {
-    headers: {
-      'Authorization': `bearer ${token}`
-    }
-  }
+  const config = { headers: { 'Authorization': `bearer ${token}` } }
   const response = await axios.post(baseUrl, { title, author, url }, config)
   return response.data
 }
 
-const blogService = { getAll, create }
+const update = async (id, blogObject, token) => {
+  const config = { headers: { 'Authorization': `bearer ${token}` } }
+  const response = await axios.put(`${baseUrl}/${id}`, blogObject, config)
+  return response.data
+}
+
+const blogService = { getAll, create, update }
 
 export default blogService

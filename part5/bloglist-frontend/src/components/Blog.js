@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 
-const Blog = ({ blog }) => {
+
+const Blog = ({ blog, onLike }) => {
   const [viewDetailed, setViewDetailed] = useState(false)
+  const [likes, setLikes] = useState(blog.likes)
 
   const blogStyle = {
     border: '1px solid black',
@@ -15,10 +17,18 @@ const Blog = ({ blog }) => {
     setViewDetailed(!viewDetailed)
   }
 
+  const handleLike = (event) => {
+    event.preventDefault()
+
+    const newLikes = likes + 1
+    setLikes(newLikes)
+    onLike(blog.id, newLikes)
+  }
+
   const details = () => (
     <div>
       <div>{blog.url}</div>
-      <div>likes {blog.likes} <button>like</button></div>
+      <div>likes {likes} <button onClick={handleLike}>like</button></div>
       <div>{blog.user.name}</div>
     </div>
   )

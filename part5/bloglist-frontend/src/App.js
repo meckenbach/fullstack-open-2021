@@ -70,6 +70,15 @@ const App = () => {
     }
   }
 
+  const handleLike = async (blogId, newLikes) => {
+    try {
+      await blogService.update(blogId, { likes: newLikes }, user.token)
+    } catch (err) {
+      setErrorMessage(err.response.data.error)
+      setTimeout(() => setErrorMessage(null), 5000)
+    }
+  }
+
   const loginForm = () => {
     return <LoginForm onLogin={handleLogin} />
   }
@@ -83,7 +92,7 @@ const App = () => {
           <BlogForm onAdd={handleAddBlog} />
         </Togglable>
         {
-          blogs.map(blog => <Blog key={blog.id} blog={blog} />)
+          blogs.map(blog => <Blog key={blog.id} blog={blog} onLike={handleLike} />)
         }
       </div>
     )

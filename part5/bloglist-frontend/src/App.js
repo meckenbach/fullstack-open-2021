@@ -70,13 +70,29 @@ const App = () => {
     }
   }
 
-  const handleLike = async (blogId, newLikes) => {
+  const handleLikeBlog = async (blogId, newLikes) => {
     try {
       const updatedBlog = await blogService.update(blogId, { likes: newLikes }, user.token)
       setBlogs(blogs.map((blog) => blog.id === updatedBlog.id ? updatedBlog : blog))
     } catch (err) {
       setErrorMessage(err.response.data.error)
       setTimeout(() => setErrorMessage(null), 5000)
+    }
+  }
+
+  const handleRemoveBlog = async ({ id: blogId, title }) => {
+    if (!window.confirm(`remove blog "${title}"?`)) return
+    try {
+      await blogService.remove(blogId, user.token)
+      setBlogs(blogs.filter((blog) => blog.id !== blogId))
+    } catch (err) {
+      if (err.response.status === 404) {
+        // Frontend out of sync with database. Remove from blogs to sync.
+        setBlogs(blogs.filter((blog) => blog.id !== blogId))
+      } else {
+        setErrorMessage('error: could not delete file')
+        setTimeout(() => setErrorMessage(null), 5000)
+      }
     }
   }
 
@@ -96,7 +112,14 @@ const App = () => {
           blogs
             // sort by likes in descending order
             .sort((blog1, blog2) => -(blog1.likes - blog2.likes))
-            .map(blog => <Blog key={blog.id} blog={blog} onLike={handleLike} />)
+            .map(blog => {
+              return <Blog
+                key={blog.id}
+                blog={blog}
+                onLike={handleLikeBlog}
+                onRemove={user.username === blog.user.username ? handleRemoveBlog : null}
+              />
+            })
         }
       </div>
     )

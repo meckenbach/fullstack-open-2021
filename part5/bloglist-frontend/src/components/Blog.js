@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 
-const Blog = ({ blog, onLike }) => {
+const Blog = ({ blog, onLike, onRemove }) => {
   const [viewDetailed, setViewDetailed] = useState(false)
 
   const blogStyle = {
@@ -22,11 +22,18 @@ const Blog = ({ blog, onLike }) => {
     onLike(blog.id, blog.likes + 1)
   }
 
+  const handleRemove = (event) => {
+    event.preventDefault()
+
+    onRemove(blog)
+  }
+
   const details = () => (
     <div>
       <div>{blog.url}</div>
       <div>likes {blog.likes} <button onClick={handleLike}>like</button></div>
       <div>{blog.user.name}</div>
+      {onRemove ? <button onClick={handleRemove}>remove</button> : null}
     </div>
   )
 

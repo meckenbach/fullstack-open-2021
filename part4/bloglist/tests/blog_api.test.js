@@ -70,6 +70,16 @@ describe('adding a new blog', () => {
     expect(authors).toContain('Superuser')
   })
 
+  test('returns the saved document with populated "user" field', async () => {
+    const response = await api
+      .post('/api/blogs')
+      .send(helper.newBlog)
+      .set('Authorization', `bearer ${token}`)
+
+    const savedBlog = response.body
+    expect(savedBlog.user.username).toEqual('root')
+  })
+
   test('defaults to value 0 for missing "likes" property', async () => {
     const newBlog = {
       title: 'Test',
@@ -125,28 +135,6 @@ describe('adding a new blog', () => {
       .expect(400)
   })
 
-  test('with any user designated as its creator', async () => {
-    const newBlog = {
-      title: 'Test',
-      author: 'Foo Bar',
-      url: 'http://localhost',
-      likes: 1
-    }
-
-    const res = await api
-      .post('/api/blogs')
-      .send(newBlog)
-      .set('Authorization', `bearer ${token}`)
-      .expect(201)
-      .expect('Content-type', /application\/json/)
-
-    const savedBlog = res.body
-
-    const users = await helper.usersInDb()
-    const userIds = users.map(user => user.id)
-
-    expect(userIds).toContainEqual(savedBlog.user)
-  })
 })
 
 describe('viewing a specific blog', () => {

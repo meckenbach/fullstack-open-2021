@@ -51,7 +51,9 @@ blogsRouter.delete('/:id', middleware.userExtractor, async (request, response, n
 
 blogsRouter.put('/:id', middleware.userExtractor, async (request, response, next) => {
   try {
-    const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, request.body, { new: true })
+    const updatedBlog = await Blog
+      .findByIdAndUpdate(request.params.id, request.body, { new: true })
+      .populate('user', { username: 1, name: 1 })
     if (updatedBlog) {
       response
         .status(200)

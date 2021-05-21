@@ -26,4 +26,19 @@ describe('Vote', () => {
     expect(newState).toHaveLength(1)
     expect(newState).toContainEqual({ ...anecdote, votes: 1 })
   })
+
+  test('create should a add a new anecdote', () => {
+    const action = {
+      type: 'CREATE',
+      data: { content: 'Test Anecdote' }
+    }
+
+    const state = []
+
+    deepFreeze(state)
+    const newState = anecdoteReducer(state, action)
+
+    expect(newState).toHaveLength(1)
+    expect(newState).toContainEqual(expect.objectContaining({ content: 'Test Anecdote', votes: 0, id: expect.anything() }))
+  })
 })

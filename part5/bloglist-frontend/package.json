@@ -20,7 +20,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "start:backend": "cd ../../part4/bloglist && PORT=3003 yarn start",
-    "start:backend:dev": "cd ../../part4/bloglist && PORT=3003 yarn start:dev"
+    "start:backend:dev": "cd ../../part4/bloglist && PORT=3003 yarn start:dev",
+    "cypress:open": "cypress open",
+    "test:e2e": "cypress run"
   },
   "eslintConfig": {
     "extends": [
@@ -42,6 +44,8 @@
   },
   "proxy": "http://localhost:3003",
   "devDependencies": {
+    "cypress": "^7.3.0",
+    "eslint-plugin-cypress": "^2.11.3",
     "eslint-plugin-jest": "^24.3.6"
   }
 }

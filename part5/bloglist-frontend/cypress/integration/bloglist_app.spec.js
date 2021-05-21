@@ -103,5 +103,26 @@ describe('Blog app', function () {
           .should('not.exist')
       })
     })
+
+    describe('And when several blogs exist', function () {
+      beforeEach(function () {
+        cy.createBlog({ title: 'Cypress Docs', author: 'Cypress.io Team', url: 'https://docs.cypress.io/', likes: 1 })
+        cy.createBlog({ title: 'Another Blog', author: 'Foo Bar', url: 'https://localhost/', likes: 10 })
+        cy.createBlog({ title: 'Third Blog', author: 'Foo Bar', url: 'https://localhost/', likes: 5 })
+
+        cy.get('.blog').as('blogs')
+      })
+
+      it('the blogs are ordered by likes in descending order', function () {
+        cy.get('@blogs')
+          .should(($blogs) => {
+            expect($blogs).to.have.length(3)
+
+            expect($blogs[0]).to.contain('Another Blog')
+            expect($blogs[1]).to.contain('Third Blog')
+            expect($blogs[2]).to.contain('Cypress Docs')
+          })
+      })
+    })
   })
 })

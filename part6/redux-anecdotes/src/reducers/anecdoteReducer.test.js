@@ -24,7 +24,7 @@ describe('Vote', () => {
     const newState = anecdoteReducer(state, action)
     
     expect(newState).toHaveLength(1)
-    expect(newState).toContainEqual({ ...anecdote, votes: 1 })
+    expect(newState).toContainEqual({ ...anecdote, votes: 1 })
   })
 
   test('create should a add a new anecdote', () => {
@@ -39,6 +39,6 @@ describe('Vote', () => {
     const newState = anecdoteReducer(state, action)
 
     expect(newState).toHaveLength(1)
-    expect(newState).toContainEqual(expect.objectContaining({ content: 'Test Anecdote', votes: 0, id: expect.anything() }))
+    expect(newState).toContainEqual(expect.objectContaining({ content: 'Test Anecdote', votes: 0, id: expect.anything() }))
   })
 })

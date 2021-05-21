@@ -64,6 +64,8 @@ describe('Blog app', function () {
       cy.contains('added Cypress')
         .should('have.css', 'color', 'rgb(0, 128, 0)')
 
+      cy.contains('create new blog')
+
       cy.contains('Cypress Docs Cypress.io Team')
     })
 

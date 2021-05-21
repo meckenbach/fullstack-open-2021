@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
@@ -18,6 +18,8 @@ const App = () => {
   const [blogs, setBlogs] = useState([])
   const [errorMessage, setErrorMessage] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
+
+  const blogFormRef = useRef()
 
   const fetchBlogs = async () => {
     const blogs = await blogService.getAll()
@@ -62,6 +64,9 @@ const App = () => {
     try {
       const blog = await blogService.create({ title, author, url }, user.token)
       setBlogs([...blogs, blog])
+
+      blogFormRef.current.toggleVisibility()
+
       setSuccessMessage(`added ${blog.title}`)
       setTimeout(() => setSuccessMessage(null), 5000)
     } catch (err) {
@@ -105,7 +110,7 @@ const App = () => {
       <div>
         <h2>blogs</h2>
         <p>{user.name} logged in<button onClick={handleLogout}>logout</button></p>
-        <Togglable buttonLabel="create new blog">
+        <Togglable buttonLabel="create new blog" ref={blogFormRef}>
           <BlogForm onAdd={handleAddBlog} />
         </Togglable>
         {

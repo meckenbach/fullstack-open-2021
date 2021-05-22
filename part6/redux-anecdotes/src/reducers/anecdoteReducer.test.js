@@ -1,7 +1,7 @@
 import anecdoteReducer from './anecdoteReducer'
 import deepFreeze from 'deep-freeze'
 
-describe('Vote', () => {
+describe('Anecdotes', () => {
   const anecdote = {
     content: 'If it hurts, do it more often',
     id: 1,

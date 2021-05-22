@@ -8,7 +8,6 @@ const AnecdoteList = () => {
 
   return (
     <div>
-      <h2>Anecdotes</h2>
       {anecdotes
         .sort((a1, a2) => -(a1.votes - a2.votes))
         .map(anecdote =>

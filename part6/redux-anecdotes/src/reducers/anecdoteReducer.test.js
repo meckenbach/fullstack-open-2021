@@ -30,7 +30,7 @@ describe('Anecdotes', () => {
   test('create should a add a new anecdote', () => {
     const action = {
       type: 'CREATE',
-      data: { content: 'Test Anecdote' }
+      data: { id: 0, content: 'Test Anecdote', votes: 0 }
     }
 
     const state = []
@@ -39,6 +39,22 @@ describe('Anecdotes', () => {
     const newState = anecdoteReducer(state, action)
 
     expect(newState).toHaveLength(1)
-    expect(newState).toContainEqual(expect.objectContaining({ content: 'Test Anecdote', votes: 0, id: expect.anything() }))
+    expect(newState).toContainEqual(expect.objectContaining({ content: 'Test Anecdote', votes: 0, id: 0 }))
+  })
+
+  test('INIT should initialize store with several anecdotes', () => {
+    const action = {
+      type: 'INIT',
+      data: [{ id: 1, content: 'Test 1', votes: 0 }, { id: 2, content: 'Test 2', votes: 1 }]
+    }
+
+    const state = []
+    
+    deepFreeze(state)
+    const newState = anecdoteReducer(state, action)
+
+    expect(newState).toHaveLength(2)
+    expect(newState).toContainEqual(expect.objectContaining({ content: 'Test 1', votes: 0, id: 1 }))
+    expect(newState).toContainEqual(expect.objectContaining({ content: 'Test 2', votes: 1, id: 2 }))
   })
 })

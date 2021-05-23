@@ -34,6 +34,11 @@
       "content": "foo",
       "votes": 0,
       "id": "-pwcFJv"
+    },
+    {
+      "content": "bar",
+      "votes": 0,
+      "id": "5-RWSUO"
     }
   ]
 }

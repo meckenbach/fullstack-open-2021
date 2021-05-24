@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-const Message = (props) => {
+const Notification = (props) => {
   const success = {
     color: 'green'
   }
@@ -17,9 +17,9 @@ const Message = (props) => {
   )
 }
 
-Message.propTypes = {
+Notification.propTypes = {
   children: PropTypes.string,
   type: PropTypes.string.isRequired
 }
 
-export default Message
+export default Notification

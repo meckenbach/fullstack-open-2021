@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
-import Message from './components/Message'
+import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 
 import blogService from './services/blogs'
@@ -132,8 +132,8 @@ const App = () => {
 
   return (
     <div>
-      { errorMessage ? <Message type="error">{errorMessage}</Message> : null }
-      { successMessage ? <Message type="success">{successMessage}</Message> : null }
+      { errorMessage ? <Notification type="error">{errorMessage}</Notification> : null }
+      { successMessage ? <Notification type="success">{successMessage}</Notification> : null }
       { user ? showBlogs() : loginForm() }
     </div>
   )

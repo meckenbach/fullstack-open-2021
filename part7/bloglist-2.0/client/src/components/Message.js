@@ -18,7 +18,7 @@ const Message = (props) => {
 }
 
 Message.propTypes = {
-  children: PropTypes.arrayOf(PropTypes.element),
+  children: PropTypes.string,
   type: PropTypes.string.isRequired
 }
 

@@ -4,6 +4,7 @@ import {
   Route,
   Link,
   Switch,
+  Redirect,
   useParams
 } from 'react-router-dom'
 
@@ -130,6 +131,8 @@ const App = () => {
   const addNew = (anecdote) => {
     anecdote.id = (Math.random() * 10000).toFixed(0)
     setAnecdotes(anecdotes.concat(anecdote))
+    setNotification(`a new anecdote ${anecdote.content} created!`)
+    setTimeout(() => setNotification(''), 10000)
   }
 
   const anecdoteById = (id) =>
@@ -150,9 +153,10 @@ const App = () => {
     <Router>
       <h1>Software anecdotes</h1>
       <Menu />
+      {notification ? <div>{notification}</div> : null}
       <Switch>
         <Route path="/create">
-          <CreateNew addNew={addNew} />
+          {notification === '' ? <CreateNew addNew={addNew} /> : <Redirect to="/" />}
         </Route>
         <Route path="/about">
           <About />

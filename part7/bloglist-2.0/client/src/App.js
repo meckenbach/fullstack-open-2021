@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { useDispatch } from 'react-redux'
 
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
@@ -12,12 +13,13 @@ import loginService from './services/login'
 import jsonschema from 'jsonschema'
 import userSchema from './userSchema.json'
 
+import { setNotification } from './reducers/notificationReducer'
 
 const App = () => {
+  const dispatch = useDispatch()
+
   const [user, setUser] = useState(null)
   const [blogs, setBlogs] = useState([])
-  const [errorMessage, setErrorMessage] = useState(null)
-  const [successMessage, setSuccessMessage] = useState(null)
 
   const blogFormRef = useRef()
 
@@ -49,8 +51,8 @@ const App = () => {
       localStorage.setItem('user', JSON.stringify(user))
       setUser(user)
     } catch (err) {
-      setErrorMessage(err.response.data.error)
-      setTimeout(() => setErrorMessage(null), 5000)
+      dispatch(setNotification(err.response.data.error, 'error'))
+      setTimeout(() => dispatch(setNotification('')), 5000)
     }
   }
 
@@ -67,11 +69,11 @@ const App = () => {
 
       blogFormRef.current.toggleVisibility()
 
-      setSuccessMessage(`added ${blog.title}`)
-      setTimeout(() => setSuccessMessage(null), 5000)
+      dispatch(setNotification(`added ${blog.title}`))
+      setTimeout(() => dispatch(setNotification('')), 5000)
     } catch (err) {
-      setErrorMessage(err.response.data.error)
-      setTimeout(() => setErrorMessage(null), 5000)
+      dispatch(setNotification(err.response.data.error, 'error'))
+      setTimeout(() => dispatch(setNotification('')), 5000)
     }
   }
 
@@ -80,8 +82,8 @@ const App = () => {
       const updatedBlog = await blogService.update(blogId, { likes: newLikes }, user.token)
       setBlogs(blogs.map((blog) => blog.id === updatedBlog.id ? updatedBlog : blog))
     } catch (err) {
-      setErrorMessage(err.response.data.error)
-      setTimeout(() => setErrorMessage(null), 5000)
+      dispatch(setNotification(err.response.data.error, 'error'))
+      setTimeout(() => dispatch(setNotification('')), 5000)
     }
   }
 
@@ -95,8 +97,8 @@ const App = () => {
         // Frontend out of sync with database. Remove from blogs to sync.
         setBlogs(blogs.filter((blog) => blog.id !== blogId))
       } else {
-        setErrorMessage('error: could not delete file')
-        setTimeout(() => setErrorMessage(null), 5000)
+        dispatch(setNotification('error: could not delete file', 'error'))
+        setTimeout(() => dispatch(setNotification('')), 5000)
       }
     }
   }
@@ -132,8 +134,7 @@ const App = () => {
 
   return (
     <div>
-      { errorMessage ? <Notification type="error">{errorMessage}</Notification> : null }
-      { successMessage ? <Notification type="success">{successMessage}</Notification> : null }
+      <Notification />
       { user ? showBlogs() : loginForm() }
     </div>
   )

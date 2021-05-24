@@ -1,16 +1,19 @@
-const reducer = (state, action) => {
+const reducer = (state = { text: '', type: 'success' }, action) => {
   switch (action.type) {
   case 'SET':
-    return action.data
+    return action.notification
   default:
     return state
   }
 }
 
-export const setNotification = (notification) => {
+export const setNotification = (text, type = 'success') => {
   return {
     type: 'SET',
-    data: notification
+    notification: {
+      text,
+      type
+    }
   }
 }
 

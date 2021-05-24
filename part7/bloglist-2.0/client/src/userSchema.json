@@ -1,0 +1,20 @@
+{
+  "id": "userSchema.json",
+  "type": "object",
+  "properties": {
+    "username": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "token": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "username",
+    "name",
+    "token"
+  ]
+}

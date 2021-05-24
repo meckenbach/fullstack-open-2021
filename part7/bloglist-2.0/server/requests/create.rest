@@ -1,0 +1,9 @@
+POST http://localhost:3003/api/blogs HTTP/1.1
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1sZSIsImlkIjoiNjBhNTUyNDlkZGI0NzIxYzg3YzJmM2Q3IiwiaWF0IjoxNjIxNDQ3NDEwfQ.Ix97uwCtzhxBtuHr-Cw5p-73tY2lVWKH6v0HRhAt0Hw
+content-type: application/json
+
+{
+    "title": "Test",
+    "author": "MLE",
+    "url": "-"
+}

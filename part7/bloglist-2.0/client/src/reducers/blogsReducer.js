@@ -6,9 +6,14 @@ const reducer =  (state = [], action) => {
     return [...state, action.blog]
   case 'LIKE_BLOG': {
     const id = action.id
-    const blogToChange = state.find((blog) => id === blog.id)
+    const blogToChange = state.find((blog) => blog.id === id)
     const changedBlog = { ...blogToChange, likes: blogToChange.likes + 1 }
     return state.map((blog) => blog.id === changedBlog.id ? changedBlog : blog)
+  }
+  case 'REMOVE_BLOG': {
+    const id = action.id
+    const blogToRemove = state.find((blog) => blog.id === id)
+    return state.filter((blog) => blog.id !== blogToRemove.id)
   }
   default:
     return state
@@ -32,6 +37,13 @@ export const addBlog = (blog) => {
 export const likeBlog = (id) => {
   return {
     type: 'LIKE_BLOG',
+    id
+  }
+}
+
+export const removeBlog = (id)  => {
+  return {
+    type: 'REMOVE_BLOG',
     id
   }
 }

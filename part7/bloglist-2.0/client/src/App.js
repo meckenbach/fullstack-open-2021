@@ -80,12 +80,8 @@ const App = () => {
         </Togglable>
         {
           blogs
-            // sort by likes in descending order
-            .sort((blog1, blog2) => -(blog1.likes - blog2.likes))
-            .map(blog => {
-              return <Blog key={blog.id} blog={blog}
-              />
-            })
+            .sort(byLikesDescending)
+            .map(blog => <Blog key={blog.id} blog={blog} />)
         }
       </div>
     )
@@ -98,5 +94,7 @@ const App = () => {
     </div>
   )
 }
+
+const byLikesDescending = ({ likes: a }, { likes: b }) => b - a
 
 export default App

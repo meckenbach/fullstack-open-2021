@@ -1,7 +1,7 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 
-const selectNotification = (state) => state
+const selectNotification = (state) => state.notification
 
 const Notification = () => {
   const notification = useSelector(selectNotification)

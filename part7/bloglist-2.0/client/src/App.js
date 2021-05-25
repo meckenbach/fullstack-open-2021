@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { useDispatch } from 'react-redux'
+import React, { useEffect, useRef } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
@@ -14,18 +14,22 @@ import jsonschema from 'jsonschema'
 import userSchema from './userSchema.json'
 
 import { setNotification } from './reducers/notificationReducer'
+import { initializeBlogs } from './reducers/blogsReducer'
+import { setUser } from './reducers/userReducer'
+
+const selectBlogs = (state) => state.blogs
+const selectUser = (state) => state.user
 
 const App = () => {
   const dispatch = useDispatch()
-
-  const [user, setUser] = useState(null)
-  const [blogs, setBlogs] = useState([])
+  const blogs = useSelector(selectBlogs)
+  const user = useSelector(selectUser)
 
   const blogFormRef = useRef()
 
   const fetchBlogs = async () => {
     const blogs = await blogService.getAll()
-    setBlogs(blogs)
+    dispatch(initializeBlogs(blogs))
   }
 
   useEffect(() => fetchBlogs(), [])
@@ -36,12 +40,12 @@ const App = () => {
       if (userJson !== null) {
         const user = JSON.parse(userJson)
         jsonschema.validate(user, userSchema, { throwError: true, allowUnknownAttributes: false })
-        setUser(user)
+        dispatch(setUser(user))
       }
     } catch (err) {
       console.error(err.message)
       localStorage.clear()
-      setUser(null)
+      dispatch(setUser(null))
     }
   }, [])
 
@@ -49,7 +53,7 @@ const App = () => {
     try {
       const user = await loginService.login({ username, password })
       localStorage.setItem('user', JSON.stringify(user))
-      setUser(user)
+      dispatch(setUser(user))
     } catch (err) {
       dispatch(setNotification(err.response.data.error, 'error'))
       setTimeout(() => dispatch(setNotification('')), 5000)
@@ -58,29 +62,14 @@ const App = () => {
 
   const handleLogout = event => {
     event.preventDefault()
-    setUser(null)
+    dispatch(setUser(null))
     localStorage.clear()
-  }
-
-  const handleAddBlog = async ({ title, author, url }) => {
-    try {
-      const blog = await blogService.create({ title, author, url }, user.token)
-      setBlogs([...blogs, blog])
-
-      blogFormRef.current.toggleVisibility()
-
-      dispatch(setNotification(`added ${blog.title}`))
-      setTimeout(() => dispatch(setNotification('')), 5000)
-    } catch (err) {
-      dispatch(setNotification(err.response.data.error, 'error'))
-      setTimeout(() => dispatch(setNotification('')), 5000)
-    }
   }
 
   const handleLikeBlog = async (blogId, newLikes) => {
     try {
       const updatedBlog = await blogService.update(blogId, { likes: newLikes }, user.token)
-      setBlogs(blogs.map((blog) => blog.id === updatedBlog.id ? updatedBlog : blog))
+      dispatch(initializeBlogs(blogs.map((blog) => blog.id === updatedBlog.id ? updatedBlog : blog)))
     } catch (err) {
       dispatch(setNotification(err.response.data.error, 'error'))
       setTimeout(() => dispatch(setNotification('')), 5000)
@@ -91,11 +80,11 @@ const App = () => {
     if (!window.confirm(`remove blog "${title}"?`)) return
     try {
       await blogService.remove(blogId, user.token)
-      setBlogs(blogs.filter((blog) => blog.id !== blogId))
+      dispatch(initializeBlogs(blogs.filter((blog) => blog.id !== blogId)))
     } catch (err) {
       if (err.response.status === 404) {
         // Frontend out of sync with database. Remove from blogs to sync.
-        setBlogs(blogs.filter((blog) => blog.id !== blogId))
+        dispatch(initializeBlogs(blogs.filter((blog) => blog.id !== blogId)))
       } else {
         dispatch(setNotification('error: could not delete file', 'error'))
         setTimeout(() => dispatch(setNotification('')), 5000)
@@ -113,7 +102,7 @@ const App = () => {
         <h2>blogs</h2>
         <p>{user.name} logged in<button onClick={handleLogout}>logout</button></p>
         <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-          <BlogForm onAdd={handleAddBlog} />
+          <BlogForm onAdd={() => blogFormRef.current.toggleVisibility()} />
         </Togglable>
         {
           blogs

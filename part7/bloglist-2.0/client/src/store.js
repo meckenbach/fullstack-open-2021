@@ -1,6 +1,10 @@
 import { createStore } from 'redux'
-import notificationReducer from './reducers/notificationReducer'
+import { composeWithDevTools } from 'redux-devtools-extension'
+import reducer from './reducers/combined'
 
-const store = createStore(notificationReducer)
+const store = createStore(
+  reducer,
+  composeWithDevTools()
+)
 
 export default store

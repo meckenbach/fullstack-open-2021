@@ -12,7 +12,7 @@ import jsonschema from 'jsonschema'
 import userSchema from './userSchema.json'
 
 import { initializeBlogs } from './reducers/blogsReducer'
-import { setUser } from './reducers/userReducer'
+import { setUser, logoutUser } from './reducers/userReducer'
 
 const selectBlogs = (state) => state.blogs
 const selectUser = (state) => state.user
@@ -41,15 +41,13 @@ const App = () => {
       }
     } catch (err) {
       console.error(err.message)
-      localStorage.clear()
-      dispatch(setUser(null))
+      dispatch(logoutUser())
     }
   }, [])
 
   const handleLogout = event => {
     event.preventDefault()
-    dispatch(setUser(null))
-    localStorage.clear()
+    dispatch(logoutUser())
   }
 
   if (user === null) return <LoginForm />

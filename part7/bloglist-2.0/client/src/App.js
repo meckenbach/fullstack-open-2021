@@ -5,8 +5,7 @@ import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
-
-import blogService from './services/blogs'
+import Notification from './components/Notification'
 
 import jsonschema from 'jsonschema'
 import userSchema from './userSchema.json'
@@ -24,12 +23,9 @@ const App = () => {
 
   const blogFormRef = useRef()
 
-  const fetchBlogs = async () => {
-    const blogs = await blogService.getAll()
-    dispatch(initializeBlogs(blogs))
-  }
-
-  useEffect(() => fetchBlogs(), [])
+  useEffect(() => {
+    dispatch(initializeBlogs())
+  }, [])
 
   useEffect(() => {
     try {
@@ -45,15 +41,21 @@ const App = () => {
     }
   }, [])
 
-  const handleLogout = event => {
+  const handleLogout = (event) => {
     event.preventDefault()
     dispatch(logoutUser())
   }
 
-  if (user === null) return <LoginForm />
+  if (user === null) return (
+    <div>
+      <Notification />
+      <LoginForm />
+    </div>
+  )
 
   return (
     <div>
+      <Notification />
       <h2>blogs</h2>
       <p>{user.name} logged in<button onClick={handleLogout}>logout</button></p>
       <Togglable buttonLabel="create new blog" ref={blogFormRef}>

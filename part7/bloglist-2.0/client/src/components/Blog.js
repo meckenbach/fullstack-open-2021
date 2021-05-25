@@ -2,10 +2,7 @@ import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import PropTypes from 'prop-types'
 
-import blogService from '../services/blogs'
-
 import { likeBlog, removeBlog } from '../reducers/blogsReducer'
-import { setNotification } from '../reducers/notificationReducer'
 
 const selectUser = (state) => state.user
 
@@ -29,33 +26,16 @@ const Blog = ({ blog }) => {
     setViewDetailed(!viewDetailed)
   }
 
-  const handleLike = async (event) => {
+  const handleLike = (event) => {
     event.preventDefault()
-
-    try {
-      await blogService.update(blog.id, { likes: blog.likes + 1 }, user.token)
-      dispatch(likeBlog(blog.id))
-    } catch (err) {
-      dispatch(setNotification(err.response.data.error, 'error'))
-      setTimeout(() => dispatch(setNotification('')), 5000)
-    }
+    dispatch(likeBlog(blog))
   }
 
-  const handleRemove = async (event) => {
+  const handleRemove = (event) => {
     event.preventDefault()
 
-    if (!window.confirm(`remove blog "${blog.title}"?`)) return
-    try {
-      await blogService.remove(blog.id, user.token)
+    if (window.confirm(`remove blog "${blog.title}"?`)) {
       dispatch(removeBlog(blog.id))
-    } catch (err) {
-      if (err.response.status === 404) {
-        // Frontend out of sync with database. Remove from blogs to sync.
-        dispatch(removeBlog(blog.id))
-      } else {
-        dispatch(setNotification('error: could not delete file', 'error'))
-        setTimeout(() => dispatch(setNotification('')), 5000)
-      }
     }
   }
 

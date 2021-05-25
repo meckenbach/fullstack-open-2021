@@ -1,15 +1,10 @@
 import React, { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import PropTypes from 'prop-types'
 import { addBlog } from '../reducers/blogsReducer'
-import { setNotification } from '../reducers/notificationReducer'
-import blogService from '../services/blogs'
-
-const selectUser = (state) => state.user
 
 const BlogForm = ({ onAdd }) => {
   const dispatch = useDispatch()
-  const user = useSelector(selectUser)
 
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
@@ -20,17 +15,7 @@ const BlogForm = ({ onAdd }) => {
 
     if (typeof onAdd === 'function') onAdd()
 
-    blogService.create({ title, author, url }, user.token)
-      .then((blog) => {
-        dispatch(addBlog(blog))
-
-        dispatch(setNotification(`added ${blog.title}`))
-        setTimeout(() => dispatch(setNotification('')), 5000)
-      })
-      .catch((err) => {
-        dispatch(setNotification(err.response.data.error, 'error'))
-        setTimeout(() => dispatch(setNotification('')), 5000)
-      })
+    dispatch(addBlog({ title, author, url }))
 
     setTitle('')
     setAuthor('')

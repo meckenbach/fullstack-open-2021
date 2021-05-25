@@ -127,4 +127,27 @@ describe('Blog app', function () {
       })
     })
   })
+
+  describe('Users page', function () {
+    beforeEach(function () {
+      cy.login('root', 's3cr3t')
+      cy.createBlog({ title: 'Cypress Docs', author: 'Cypress.io Team', url: 'https://docs.cypress.io/', likes: 1 })
+      cy.visit('http://localhost:3000/users')
+    })
+
+    it('lists all the users by name', function () {
+      cy.contains('Superuser')
+      cy.contains('Myself')
+    })
+
+    it('and the number of blogs they created', function () {
+      cy.contains('blogs created')
+
+      cy.get('table > tbody > tr:nth-child(1) > td:nth-child(2)')
+        .should('have.text', '1')
+
+      cy.get('table > tbody > tr:nth-child(2) > td:nth-child(2)')
+        .should('have.text', '0')
+    })
+  })
 })

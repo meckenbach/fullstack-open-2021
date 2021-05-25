@@ -1,11 +1,13 @@
 import React, { useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { Switch, Route } from 'react-router-dom'
 
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 import Notification from './components/Notification'
+import Users from './components/Users'
 
 import jsonschema from 'jsonschema'
 import userSchema from './userSchema.json'
@@ -53,19 +55,36 @@ const App = () => {
     </div>
   )
 
-  return (
+  const header = () => (
     <div>
       <Notification />
       <h2>blogs</h2>
       <p>{user.name} logged in<button onClick={handleLogout}>logout</button></p>
-      <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-        <BlogForm onAdd={() => blogFormRef.current.toggleVisibility()} />
-      </Togglable>
-      {blogs
-        .sort(byLikesDescending)
-        .map(blog => <Blog key={blog.id} blog={blog} />)
-      }
     </div>
+  )
+
+  return (
+    <Switch>
+      <Route exact path="/">
+        <div>
+          {header()}
+          <Togglable buttonLabel="create new blog" ref={blogFormRef}>
+            <BlogForm onAdd={() => blogFormRef.current.toggleVisibility()} />
+          </Togglable>
+          {blogs
+            .sort(byLikesDescending)
+            .map(blog => <Blog key={blog.id} blog={blog} />)
+          }
+        </div>
+      </Route>
+      <Route path="/login">
+        <LoginForm />
+      </Route>
+      <Route path="/users">
+        {header()}
+        <Users />
+      </Route>
+    </Switch>
   )
 }
 

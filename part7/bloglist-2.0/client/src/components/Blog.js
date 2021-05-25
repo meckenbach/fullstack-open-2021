@@ -1,8 +1,19 @@
 import React, { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import PropTypes from 'prop-types'
 
-const Blog = ({ blog, onLike, onRemove }) => {
+import blogService from '../services/blogs'
+
+import { likeBlog } from '../reducers/blogsReducer'
+import { setNotification } from '../reducers/notificationReducer'
+
+const selectUser = (state) => state.user
+
+const Blog = ({ blog, onRemove }) => {
   const [viewDetailed, setViewDetailed] = useState(false)
+
+  const user = useSelector(selectUser)
+  const dispatch = useDispatch()
 
   const blogStyle = {
     border: '1px solid black',
@@ -16,10 +27,16 @@ const Blog = ({ blog, onLike, onRemove }) => {
     setViewDetailed(!viewDetailed)
   }
 
-  const handleLike = (event) => {
+  const handleLike = async (event) => {
     event.preventDefault()
 
-    onLike(blog.id, blog.likes + 1)
+    try {
+      await blogService.update(blog.id, { likes: blog.likes + 1 }, user.token)
+      dispatch(likeBlog(blog.id))
+    } catch (err) {
+      dispatch(setNotification(err.response.data.error, 'error'))
+      setTimeout(() => dispatch(setNotification('')), 5000)
+    }
   }
 
   const handleRemove = (event) => {

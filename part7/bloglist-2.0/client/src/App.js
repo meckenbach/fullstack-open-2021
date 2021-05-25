@@ -66,16 +66,6 @@ const App = () => {
     localStorage.clear()
   }
 
-  const handleLikeBlog = async (blogId, newLikes) => {
-    try {
-      const updatedBlog = await blogService.update(blogId, { likes: newLikes }, user.token)
-      dispatch(initializeBlogs(blogs.map((blog) => blog.id === updatedBlog.id ? updatedBlog : blog)))
-    } catch (err) {
-      dispatch(setNotification(err.response.data.error, 'error'))
-      setTimeout(() => dispatch(setNotification('')), 5000)
-    }
-  }
-
   const handleRemoveBlog = async ({ id: blogId, title }) => {
     if (!window.confirm(`remove blog "${title}"?`)) return
     try {
@@ -112,7 +102,6 @@ const App = () => {
               return <Blog
                 key={blog.id}
                 blog={blog}
-                onLike={handleLikeBlog}
                 onRemove={user.username === blog.user.username ? handleRemoveBlog : null}
               />
             })

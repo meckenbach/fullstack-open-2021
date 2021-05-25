@@ -4,16 +4,18 @@ import PropTypes from 'prop-types'
 
 import blogService from '../services/blogs'
 
-import { likeBlog } from '../reducers/blogsReducer'
+import { likeBlog, removeBlog } from '../reducers/blogsReducer'
 import { setNotification } from '../reducers/notificationReducer'
 
 const selectUser = (state) => state.user
 
-const Blog = ({ blog, onRemove }) => {
+const Blog = ({ blog }) => {
   const [viewDetailed, setViewDetailed] = useState(false)
 
   const user = useSelector(selectUser)
   const dispatch = useDispatch()
+
+  const isAuthorized = user.username === blog.user.username
 
   const blogStyle = {
     border: '1px solid black',
@@ -39,10 +41,22 @@ const Blog = ({ blog, onRemove }) => {
     }
   }
 
-  const handleRemove = (event) => {
+  const handleRemove = async (event) => {
     event.preventDefault()
 
-    onRemove(blog)
+    if (!window.confirm(`remove blog "${blog.title}"?`)) return
+    try {
+      await blogService.remove(blog.id, user.token)
+      dispatch(removeBlog(blog.id))
+    } catch (err) {
+      if (err.response.status === 404) {
+        // Frontend out of sync with database. Remove from blogs to sync.
+        dispatch(removeBlog(blog.id))
+      } else {
+        dispatch(setNotification('error: could not delete file', 'error'))
+        setTimeout(() => dispatch(setNotification('')), 5000)
+      }
+    }
   }
 
   const details = () => (
@@ -50,7 +64,7 @@ const Blog = ({ blog, onRemove }) => {
       <div>{blog.url}</div>
       <div>likes {blog.likes} <button onClick={handleLike}>like</button></div>
       <div>{blog.user.name}</div>
-      {onRemove ? <button onClick={handleRemove}>remove</button> : null}
+      {isAuthorized ? <button onClick={handleRemove}>remove</button> : null}
     </div>
   )
 

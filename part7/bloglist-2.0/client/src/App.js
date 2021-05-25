@@ -66,22 +66,6 @@ const App = () => {
     localStorage.clear()
   }
 
-  const handleRemoveBlog = async ({ id: blogId, title }) => {
-    if (!window.confirm(`remove blog "${title}"?`)) return
-    try {
-      await blogService.remove(blogId, user.token)
-      dispatch(initializeBlogs(blogs.filter((blog) => blog.id !== blogId)))
-    } catch (err) {
-      if (err.response.status === 404) {
-        // Frontend out of sync with database. Remove from blogs to sync.
-        dispatch(initializeBlogs(blogs.filter((blog) => blog.id !== blogId)))
-      } else {
-        dispatch(setNotification('error: could not delete file', 'error'))
-        setTimeout(() => dispatch(setNotification('')), 5000)
-      }
-    }
-  }
-
   const loginForm = () => {
     return <LoginForm onLogin={handleLogin} />
   }
@@ -99,10 +83,7 @@ const App = () => {
             // sort by likes in descending order
             .sort((blog1, blog2) => -(blog1.likes - blog2.likes))
             .map(blog => {
-              return <Blog
-                key={blog.id}
-                blog={blog}
-                onRemove={user.username === blog.user.username ? handleRemoveBlog : null}
+              return <Blog key={blog.id} blog={blog}
               />
             })
         }

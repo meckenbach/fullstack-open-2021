@@ -1,54 +1,82 @@
 import deepFreeze from 'deep-freeze'
-import blogReducer, { addBlog, initializeBlogs } from './blogsReducer'
+import blogsReducer, { addBlog, initializeBlogs, likeBlog } from './blogsReducer'
 
 const newBlog = {
   title: 'A Title',
   author: 'An Author',
   url: 'An URL',
-  likes: 0
+  likes: 0,
+  id: 1
 }
 
-test('should add a blog', () => {
-  const state = []
+describe('blogsReducer', () => {
+  test('should initialize the state with action INIT_BLOGS', () => {
+    const state = []
 
-  const action = {
-    type: 'ADD_BLOG',
-    blog: newBlog
-  }
+    const initialBlogs = [
+      newBlog,
+      {
+        title: 'Second Blog',
+        author: 'Another Author',
+        url: 'Another URL',
+        likes: 1
+      },
+    ]
 
-  deepFreeze(state)
-  const newState = blogReducer(state, action)
+    const action = {
+      type: 'INIT_BLOGS',
+      blogs: initialBlogs
+    }
 
-  expect(newState).toContainEqual(newBlog)
-})
+    deepFreeze(state)
+    const newState = blogsReducer(state, action)
 
-test('should initialize bloglist', () => {
-  const state = []
+    expect(newState).toHaveLength(2)
+    expect(newState).toEqual(initialBlogs)
+  })
 
-  const initialBlogs = [
-    newBlog,
-    {
-      title: 'Second Blog',
-      author: 'Another Author',
-      url: 'Another URL',
-      likes: 1
-    },
-  ]
+  test('should return new state with blog added with action ADD_BLOG', () => {
+    const state = []
 
-  const action = {
-    type: 'INIT_BLOGS',
-    blogs: initialBlogs
-  }
+    const action = {
+      type: 'ADD_BLOG',
+      blog: newBlog
+    }
 
-  deepFreeze(state)
-  const newState = blogReducer(state, action)
+    deepFreeze(state)
+    const newState = blogsReducer(state, action)
 
-  expect(newState).toHaveLength(2)
-  expect(newState).toEqual(initialBlogs)
+    expect(newState).toHaveLength(1)
+    expect(newState).toContainEqual(newBlog)
+  })
+
+  test('should add 1 to "likes" property of a specific blog with action LIKE_BLOG', () => {
+    const state =  [newBlog]
+
+    const action = {
+      type: 'LIKE_BLOG',
+      id: newBlog.id
+    }
+
+    deepFreeze(state)
+    const newState = blogsReducer(state, action)
+
+    expect(newState).toContainEqual({ ...newBlog, likes: 1 })
+  })
 })
 
 describe('action creators', () => {
-  test('addBlog should return ADD action', () => {
+  test('initializeBlogs should return action INIT_BLOGS', () => {
+    const action = {
+      type: 'INIT_BLOGS',
+      blogs: [newBlog, newBlog]
+    }
+
+    const returnedAction = initializeBlogs([newBlog, newBlog])
+    expect(returnedAction).toEqual(action)
+  })
+
+  test('addBlog should return action ADD_BLOG', () => {
     const action = {
       type: 'ADD_BLOG',
       blog: newBlog
@@ -57,13 +85,12 @@ describe('action creators', () => {
     expect(addBlog(newBlog)).toEqual(action)
   })
 
-  test('initializeBlogs should return INIT action', () => {
+  test('likeBlog should return action LIKE_BLOG', () => {
     const action = {
-      type: 'INIT_BLOGS',
-      blogs: [newBlog, newBlog]
+      type: 'LIKE_BLOG',
+      id: 1
     }
 
-    const returnedAction = initializeBlogs([newBlog, newBlog])
-    expect(returnedAction).toEqual(action)
+    expect(likeBlog(1)).toEqual(action)
   })
 })

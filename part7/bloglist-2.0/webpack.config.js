@@ -5,6 +5,7 @@ const config = {
   entry: './client/src/index.js',
   output: {
     path: path.resolve(__dirname, 'build'),
+    publicPath: '/',
     filename: 'main.js'
   },
   devServer: {

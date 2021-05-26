@@ -1,3 +1,4 @@
+import { curry } from 'lodash/fp'
 import usersService from '../services/users'
 
 const initialState = {
@@ -19,6 +20,7 @@ const reducer = (state = initialState, { type, users, error }) => {
   }
 }
 
+// actions
 export const initializeUsers = () => async (dispatch) => {
   dispatch({
     type: 'GET_USERS_PENDING'
@@ -36,5 +38,12 @@ export const initializeUsers = () => async (dispatch) => {
     })
   }
 }
+
+// selectors
+export const selectAllUsers = state => state.users.users
+
+export const selectUserById = curry((id, state) => state.users.users.find(user => user.id === id))
+
+export const selectUsersStatus = state => state.users.status
 
 export default reducer

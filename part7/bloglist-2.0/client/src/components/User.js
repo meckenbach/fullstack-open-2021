@@ -1,14 +1,16 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-
 import { useParams } from 'react-router-dom'
+import { selectUsersStatus, selectUserById } from '../reducers/usersReducer'
 
 const User = () => {
   const { id } = useParams()
-  const user = useSelector((state) => state.users)
-    .find((user) => user.id === id)
+  const user = useSelector(selectUserById(id))
+  const usersStatus = useSelector(selectUsersStatus)
 
-  if (!user) return null
+  if (usersStatus === 'pending' || usersStatus === 'loading') return <div>Loading...</div>
+
+  if (!user) return <div>User not found.</div>
 
   return (
     <div>

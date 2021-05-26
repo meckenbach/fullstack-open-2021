@@ -16,20 +16,21 @@ import jsonschema from 'jsonschema'
 import userSchema from './userSchema.json'
 
 import { initializeBlogs } from './reducers/blogsReducer'
-import { initializeUsers } from './reducers/usersReducer'
+import { initializeUsers, selectUsersStatus } from './reducers/usersReducer'
 
 import { setUser, logoutUser } from './reducers/userReducer'
 
 const App = () => {
   const dispatch = useDispatch()
   const authorizedUser = useSelector((state) => state.user)
+  const usersStatus = useSelector(selectUsersStatus)
 
   const blogFormRef = useRef()
 
   useEffect(() => {
     dispatch(initializeBlogs())
-    dispatch(initializeUsers())
-  }, [])
+    if (usersStatus === 'idle') dispatch(initializeUsers())
+  }, [usersStatus, dispatch])
 
   useEffect(() => {
     try {

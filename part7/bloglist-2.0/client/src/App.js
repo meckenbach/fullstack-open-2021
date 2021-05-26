@@ -1,32 +1,34 @@
 import React, { useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Switch, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
 
-import Blog from './components/Blog'
+import Blogs from './components/Blogs'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 import Notification from './components/Notification'
 import Users from './components/Users'
+import User from './components/User'
+import Navbar from './components/Navbar'
+import PrivateRoute from  './components/PrivateRoute'
 
 import jsonschema from 'jsonschema'
 import userSchema from './userSchema.json'
 
 import { initializeBlogs } from './reducers/blogsReducer'
-import { setUser, logoutUser } from './reducers/userReducer'
+import { initializeUsers } from './reducers/usersReducer'
 
-const selectBlogs = (state) => state.blogs
-const selectUser = (state) => state.user
+import { setUser, logoutUser } from './reducers/userReducer'
 
 const App = () => {
   const dispatch = useDispatch()
-  const blogs = useSelector(selectBlogs)
-  const user = useSelector(selectUser)
+  const authorizedUser = useSelector((state) => state.user)
 
   const blogFormRef = useRef()
 
   useEffect(() => {
     dispatch(initializeBlogs())
+    dispatch(initializeUsers())
   }, [])
 
   useEffect(() => {
@@ -43,51 +45,36 @@ const App = () => {
     }
   }, [])
 
-  const handleLogout = (event) => {
-    event.preventDefault()
-    dispatch(logoutUser())
-  }
-
-  if (user === null) return (
-    <div>
-      <Notification />
-      <LoginForm />
-    </div>
-  )
-
-  const header = () => (
-    <div>
-      <Notification />
-      <h2>blogs</h2>
-      <p>{user.name} logged in<button onClick={handleLogout}>logout</button></p>
-    </div>
-  )
-
   return (
-    <Switch>
-      <Route exact path="/">
-        <div>
-          {header()}
+    <Router>
+      <Notification />
+      {authorizedUser
+        ? (
+          <div>
+            <h2>blogs</h2>
+            <Navbar />
+          </div>
+        )
+        : null}
+      <Switch>
+        <Route path="/login">
+          {authorizedUser ? <Redirect to="/" /> : <LoginForm />}
+        </Route>
+        <PrivateRoute exact path="/">
           <Togglable buttonLabel="create new blog" ref={blogFormRef}>
             <BlogForm onAdd={() => blogFormRef.current.toggleVisibility()} />
           </Togglable>
-          {blogs
-            .sort(byLikesDescending)
-            .map(blog => <Blog key={blog.id} blog={blog} />)
-          }
-        </div>
-      </Route>
-      <Route path="/login">
-        <LoginForm />
-      </Route>
-      <Route path="/users">
-        {header()}
-        <Users />
-      </Route>
-    </Switch>
+          <Blogs />
+        </PrivateRoute>
+        <PrivateRoute exact path="/users">
+          <Users />
+        </PrivateRoute>
+        <PrivateRoute path="/users/:id">
+          <User />
+        </PrivateRoute>
+      </Switch>
+    </Router>
   )
 }
-
-const byLikesDescending = ({ likes: a }, { likes: b }) => b - a
 
 export default App

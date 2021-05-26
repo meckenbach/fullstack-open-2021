@@ -1,6 +1,7 @@
 const express = require('express')
 const middleware = require('../utils/middleware')
 const Blog = require('../models/blog')
+const Comment = require('../models/comment')
 
 const blogsRouter = express.Router()
 
@@ -8,6 +9,7 @@ blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog
     .find({})
     .populate('user', { username: 1, name: 1 })
+    .populate('comments', { text: 1, date: 1 })
   return response.json(blogs)
 })
 
@@ -70,6 +72,25 @@ blogsRouter.put('/:id', middleware.userExtractor, async (request, response, next
     } else {
       response.status(404).end()
     }
+  } catch (err) {
+    next(err)
+  }
+})
+
+blogsRouter.post('/:id/comments', async (request, response, next) => {
+  try {
+    const blog = await Blog.findById(request.params.id)
+
+    const { text, date } = request.body
+    const comment = new Comment({ text, date })
+    await comment.save()
+
+    blog.comments.push(comment)
+    await blog.save()
+
+    response
+      .status(201)
+      .json(comment)
   } catch (err) {
     next(err)
   }

@@ -37,6 +37,10 @@ const Blog = () => {
       <div>likes {blog.likes} <button onClick={handleLike}>like</button></div>
       <div>added by {blog.user.name}</div>
       {isAuthorized ? <button onClick={handleRemove}>remove</button> : null}
+      <h3>comments</h3>
+      <ul>
+        {blog.comments.map(comment => <li key={comment.id}>{comment.text}</li>)}
+      </ul>
     </div>
   )
 }

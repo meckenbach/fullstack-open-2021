@@ -126,7 +126,7 @@ export const likeBlog = ({ id, likes }) => async (dispatch, getState) => {
   }
 }
 
-export const removeBlog = ({ id }) => async (dispatch, getState) => {
+export const removeBlog = (id) => async (dispatch, getState) => {
   dispatch({
     type: 'REMOVE_BLOG_PENDING'
   })
@@ -136,6 +136,7 @@ export const removeBlog = ({ id }) => async (dispatch, getState) => {
   } = getState()
 
   try {
+    console.log(id)
     await blogsService.remove(id, token)
     dispatch({
       type: 'REMOVE_BLOG_FULFILLED',
@@ -151,7 +152,7 @@ export const removeBlog = ({ id }) => async (dispatch, getState) => {
     } else {
       dispatch({
         type: 'REMOVE_BLOG_REJECTED',
-        error: 'could not delete file'
+        error: error.response.data.error
       })
       dispatch(setNotification('error: could not delete file', 'error'))
       setTimeout(() => dispatch(setNotification('')), 5000)

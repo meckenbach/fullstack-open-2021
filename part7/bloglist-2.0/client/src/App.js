@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
 
 import Blogs from './components/Blogs'
+import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
@@ -64,10 +65,16 @@ const App = () => {
           {authorizedUser ? <Redirect to="/" /> : <LoginForm />}
         </Route>
         <PrivateRoute exact path="/">
+          <Redirect to="/blogs" />
+        </PrivateRoute>
+        <PrivateRoute exact path="/blogs">
           <Togglable buttonLabel="create new blog" ref={blogFormRef}>
             <BlogForm onAdd={() => blogFormRef.current.toggleVisibility()} />
           </Togglable>
           <Blogs />
+        </PrivateRoute>
+        <PrivateRoute path="/blogs/:blogId">
+          <Blog />
         </PrivateRoute>
         <PrivateRoute exact path="/users">
           <Users />

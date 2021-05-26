@@ -15,7 +15,7 @@ import PrivateRoute from  './components/PrivateRoute'
 import jsonschema from 'jsonschema'
 import userSchema from './userSchema.json'
 
-import { initializeBlogs } from './reducers/blogsReducer'
+import { initializeBlogs, selectBlogsStatus } from './reducers/blogsReducer'
 import { initializeUsers, selectUsersStatus } from './reducers/usersReducer'
 
 import { setUser, logoutUser } from './reducers/userReducer'
@@ -23,14 +23,16 @@ import { setUser, logoutUser } from './reducers/userReducer'
 const App = () => {
   const dispatch = useDispatch()
   const authorizedUser = useSelector((state) => state.user)
+
+  const blogsStatus = useSelector(selectBlogsStatus)
   const usersStatus = useSelector(selectUsersStatus)
 
   const blogFormRef = useRef()
 
   useEffect(() => {
-    dispatch(initializeBlogs())
+    if (blogsStatus === 'idle') dispatch(initializeBlogs())
     if (usersStatus === 'idle') dispatch(initializeUsers())
-  }, [usersStatus, dispatch])
+  }, [blogsStatus, usersStatus, dispatch])
 
   useEffect(() => {
     try {

@@ -48,6 +48,21 @@ const reducer =  (state = initialState, action) => {
   }
   case 'REMOVE_BLOG_REJECTED':
     return { ...state, status: 'failure', error: action.error }
+
+  case 'ADD_BLOG_COMMENT_PENDING':
+    return { ...state, status: 'loading' }
+  case 'ADD_BLOG_COMMENT_FULFILLED': {
+    const { blogId, comment } = action.data
+    const blogs = state.data
+    const blog = blogs.find(blog => blog.id === blogId)
+    const newComments = [...blog.comments, comment]
+    const newBlog = { ...blog, comments: newComments }
+    const newBlogs = blogs.map(blog => blog.id === newBlog.id ? newBlog : blog)
+    return { ...state, status: 'success', data: newBlogs }
+  }
+  case 'ADD_BLOG_COMMENT_REJECTED':
+    return { ...state, status: 'failure', error: action.error }
+
   default:
     return state
   }
@@ -157,6 +172,27 @@ export const removeBlog = (id) => async (dispatch, getState) => {
       dispatch(setNotification('error: could not delete file', 'error'))
       setTimeout(() => dispatch(setNotification('')), 5000)
     }
+  }
+}
+
+export const addBlogComment = (id, text) => async (dispatch) => {
+  dispatch({
+    type: 'ADD_BLOG_COMMENT_PENDING'
+  })
+  try {
+    const comment = await blogsService.addComment(id, text)
+    dispatch({
+      type: 'ADD_BLOG_COMMENT_FULFILLED',
+      data: {
+        blogId: id,
+        comment
+      }
+    })
+  } catch (error) {
+    dispatch({
+      type: 'ADD_BLOG_COMMENT_REJECTED',
+      error: error.response.data.error
+    })
   }
 }
 

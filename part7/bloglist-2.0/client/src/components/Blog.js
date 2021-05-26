@@ -2,7 +2,7 @@ import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 
-import { likeBlog, removeBlog, selectBlogById } from '../reducers/blogsReducer'
+import { likeBlog, removeBlog, addBlogComment, selectBlogById } from '../reducers/blogsReducer'
 
 const selectUser = (state) => state.user
 
@@ -30,6 +30,11 @@ const Blog = () => {
     }
   }
 
+  const handleAddComment = (event) => {
+    event.preventDefault()
+    dispatch(addBlogComment(blog.id, event.target.comment.value))
+  }
+
   return (
     <div>
       <h2>{blog.title}</h2>
@@ -38,6 +43,10 @@ const Blog = () => {
       <div>added by {blog.user.name}</div>
       {isAuthorized ? <button onClick={handleRemove}>remove</button> : null}
       <h3>comments</h3>
+      <form onSubmit={handleAddComment}>
+        <input type="text" name="comment" />
+        <button>add comment</button>
+      </form>
       <ul>
         {blog.comments.map(comment => <li key={comment.id}>{comment.text}</li>)}
       </ul>

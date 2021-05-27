@@ -21,7 +21,8 @@
     "react-redux": "^7.2.4",
     "react-router-dom": "^5.2.0",
     "redux": "^4.1.0",
-    "redux-thunk": "^2.3.0"
+    "redux-thunk": "^2.3.0",
+    "styled-components": "^5.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.14.3",
@@ -31,6 +32,7 @@
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^13.1.9",
     "babel-loader": "^8.2.2",
+    "babel-plugin-styled-components": "^1.12.0",
     "cross-env": "^7.0.3",
     "cypress": "^7.3.0",
     "deep-freeze": "^0.0.1",
@@ -42,6 +44,10 @@
     "jest": "^26.6.3",
     "nodemon": "^2.0.7",
     "redux-devtools-extension": "^2.13.9",
+    "stylelint": "^13.13.1",
+    "stylelint-config-recommended": "^5.0.0",
+    "stylelint-config-styled-components": "^0.1.1",
+    "stylelint-processor-styled-components": "^1.10.0",
     "supertest": "^6.1.3",
     "webpack": "^5.37.1",
     "webpack-cli": "^4.7.0",
@@ -53,6 +59,7 @@
     "start:test": "cross-env NODE_ENV=test node index.js",
     "test": "cross-env NODE_ENV=test jest --verbose --runInBand",
     "lint": "eslint .",
+    "lint:css": "stylelint ./client/src/**/*.js",
     "cypress:open": "cypress open --project client",
     "test:e2e": "cypress run --project client",
     "build": "webpack --mode=development",

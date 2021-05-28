@@ -2,6 +2,9 @@ import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import PropTypes from 'prop-types'
 import { addBlog } from '../reducers/blogsReducer'
+import TextField from './styled/TextField'
+import Form from './styled/Form'
+import Button from './styled/Button'
 
 const BlogForm = ({ onAdd }) => {
   const dispatch = useDispatch()
@@ -24,24 +27,13 @@ const BlogForm = ({ onAdd }) => {
 
   return (
     <div>
-      <h2>create new</h2>
-      <form onSubmit={handleAddBlog}>
-        <div>
-          <label htmlFor="title">title:</label>
-          <input id="title" onChange={(event) => setTitle(event.target.value)} value={title} required />
-        </div>
-        <div>
-          <label htmlFor="author">author:</label>
-          <input id="author" onChange={(event) => setAuthor(event.target.value)} value={author} required />
-        </div>
-        <div>
-          <label htmlFor="url">url:</label>
-          <input id="url" onChange={(event) => setUrl(event.target.value)} value={url} required />
-        </div>
-        <div>
-          <button type="submit">create</button>
-        </div>
-      </form>
+      <Form legend="create new" onSubmit={handleAddBlog}>
+        <TextField label="title" onChange={(event) => setTitle(event.target.value)} value={title} required />
+        <TextField label="author" onChange={(event) => setAuthor(event.target.value)} value={author} required />
+        <TextField label="url" onChange={(event) => setUrl(event.target.value)} value={url} required />
+        <Button primary>create</Button>
+        <Button type="button" onClick={onAdd}>cancel</Button>
+      </Form>
     </div>
   )
 }

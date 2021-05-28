@@ -4,7 +4,7 @@ import Form from './styled/Form'
 import TextField from './styled/TextField'
 import Button from './styled/Button'
 
-import { loginUser } from '../reducers/userReducer'
+import { login } from '../reducers/authorizationReducer'
 
 const LoginForm = () => {
   const [username, setUsername] = useState('')
@@ -15,7 +15,7 @@ const LoginForm = () => {
   const handleLogin = async (event) => {
     event.preventDefault()
 
-    dispatch(loginUser(username, password))
+    dispatch(login({ username, password }))
 
     setUsername('')
     setPassword('')

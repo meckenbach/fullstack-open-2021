@@ -1,21 +1,20 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
+import { selectAuthorizedUser } from '../reducers/authorizationReducer'
 
 import { likeBlog, removeBlog, addBlogComment, selectBlogById } from '../reducers/blogsReducer'
-
-const selectUser = (state) => state.user
 
 const Blog = () => {
   const { blogId } = useParams()
   const blog = useSelector(selectBlogById(blogId))
-  const user = useSelector(selectUser)
+  const authorizedUser = useSelector(selectAuthorizedUser)
 
   const dispatch = useDispatch()
 
   if (!blog) return <div>Blog not found.</div>
 
-  const isAuthorized = user.username === blog.user.username
+  const isAuthorized = authorizedUser.username === blog.user.username
 
   const handleLike = (event) => {
     event.preventDefault()

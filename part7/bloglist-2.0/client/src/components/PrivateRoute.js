@@ -3,16 +3,20 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { Route, Redirect } from 'react-router-dom'
+import { selectAuthorizationStatus, selectAuthorizedUser } from '../reducers/authorizationReducer'
 
 import LoginForm from './LoginForm'
 
 const PrivateRoute = ({ children, ...rest }) => {
-  const authorizedUser = useSelector((state) => state.user)
+  const authorizedUser = useSelector(selectAuthorizedUser)
+  const authorizationStatus = useSelector(selectAuthorizationStatus)
+
+  if (authorizationStatus === 'idle' || authorizationStatus === 'loading') return null
 
   const handleRender = () => {
     return authorizedUser
       ? children
-      : <LoginForm />
+      : <Redirect to="/login" />
   }
 
   return (

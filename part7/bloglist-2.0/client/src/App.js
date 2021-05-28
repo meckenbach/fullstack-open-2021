@@ -10,20 +10,20 @@ import Togglable from './components/Togglable'
 import Notification from './components/Notification'
 import Users from './components/Users'
 import User from './components/User'
-import Navbar from './components/Navbar'
 import PrivateRoute from  './components/PrivateRoute'
-
-import jsonschema from 'jsonschema'
-import userSchema from './userSchema.json'
+import Page from './components/styled/Page'
+import Main from './components/styled/Main'
+import Header from './components/styled/Header'
 
 import { initializeBlogs, selectBlogsStatus } from './reducers/blogsReducer'
 import { initializeUsers, selectUsersStatus } from './reducers/usersReducer'
 
-import { setUser, logoutUser } from './reducers/userReducer'
+import { authorizeFromLocalStorage, selectAuthorizedUser, selectAuthorizationStatus } from './reducers/authorizationReducer'
 
 const App = () => {
   const dispatch = useDispatch()
-  const authorizedUser = useSelector((state) => state.user)
+  const authorizedUser = useSelector(selectAuthorizedUser)
+  const authorizationStatus = useSelector(selectAuthorizationStatus)
 
   const blogsStatus = useSelector(selectBlogsStatus)
   const usersStatus = useSelector(selectUsersStatus)
@@ -36,51 +36,55 @@ const App = () => {
   }, [blogsStatus, usersStatus, dispatch])
 
   useEffect(() => {
-    try {
-      const userJson = localStorage.getItem('user')
-      if (userJson !== null) {
-        const user = JSON.parse(userJson)
-        jsonschema.validate(user, userSchema, { throwError: true, allowUnknownAttributes: false })
-        dispatch(setUser(user))
-      }
-    } catch (err) {
-      console.error(err.message)
-      dispatch(logoutUser())
-    }
+    if (authorizationStatus === 'idle') dispatch(authorizeFromLocalStorage())
   }, [])
 
   return (
     <Router>
       <Notification />
-      {authorizedUser
-        ? (
-          <div>
-            <h2>blogs</h2>
-            <Navbar />
-          </div>
-        )
-        : null}
       <Switch>
         <Route path="/login">
-          {authorizedUser ? <Redirect to="/" /> : <LoginForm />}
+          {authorizedUser
+            ? <Redirect to="/" />
+            : (
+              <Page>
+                <Main>
+                  <LoginForm />
+                </Main>
+              </Page>)
+          }
         </Route>
         <PrivateRoute exact path="/">
           <Redirect to="/blogs" />
         </PrivateRoute>
         <PrivateRoute exact path="/blogs">
-          <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-            <BlogForm onAdd={() => blogFormRef.current.toggleVisibility()} />
-          </Togglable>
-          <Blogs />
+          <Page>
+            <Header />
+            <Main>
+              <Togglable buttonLabel="create new blog" ref={blogFormRef}>
+                <BlogForm onAdd={() => blogFormRef.current.toggleVisibility()} />
+              </Togglable>
+              <Blogs />
+            </Main>
+          </Page>
         </PrivateRoute>
         <PrivateRoute path="/blogs/:blogId">
-          <Blog />
+          <Header />
+          <Main>
+            <Blog />
+          </Main>
         </PrivateRoute>
         <PrivateRoute exact path="/users">
-          <Users />
+          <Header />
+          <Main>
+            <Users />
+          </Main>
         </PrivateRoute>
         <PrivateRoute path="/users/:id">
-          <User />
+          <Header />
+          <Main>
+            <User />
+          </Main>
         </PrivateRoute>
       </Switch>
     </Router>

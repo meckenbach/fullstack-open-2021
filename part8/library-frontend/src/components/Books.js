@@ -12,11 +12,14 @@ const ALL_BOOKS = gql`
 `
 
 const Books = (props) => {
+  const { loading, data } = useQuery(ALL_BOOKS)
+  if (loading) return <div>Loading...</div>
+
   if (!props.show) {
     return null
   }
 
-  const books = []
+  const books = data.allBooks
 
   return (
     <div>

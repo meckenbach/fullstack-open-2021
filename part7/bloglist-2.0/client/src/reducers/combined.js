@@ -1,13 +1,13 @@
 import { combineReducers } from 'redux'
 import blogsReducer from './blogsReducer'
 import notificationReducer from './notificationReducer'
-import userReducer from './userReducer'
+import authorizationReducer from './authorizationReducer'
 import usersReducer from './usersReducer'
 
 const reducer = combineReducers({
   blogs: blogsReducer,
   notification: notificationReducer,
-  user: userReducer,
+  authorization: authorizationReducer,
   users: usersReducer
 })
 

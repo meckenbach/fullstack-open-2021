@@ -2,6 +2,9 @@ import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { selectAuthorizedUser } from '../reducers/authorizationReducer'
+import TextLink from './styled/TextLink'
+import Button from './styled/Button'
+
 
 import { likeBlog, removeBlog, addBlogComment, selectBlogById } from '../reducers/blogsReducer'
 
@@ -37,10 +40,10 @@ const Blog = () => {
   return (
     <div>
       <h2>{blog.title}</h2>
-      <div><a href={blog.url}>{blog.url}</a></div>
-      <div>likes {blog.likes} <button onClick={handleLike}>like</button></div>
+      <p><TextLink to={blog.url}>{blog.url}</TextLink></p>
+      <p>likes {blog.likes} <button onClick={handleLike}>like</button></p>
       <div>added by {blog.user.name}</div>
-      {isAuthorized ? <button onClick={handleRemove}>remove</button> : null}
+      {isAuthorized ? <Button onClick={handleRemove}>remove</Button> : null}
       <h3>comments</h3>
       <form onSubmit={handleAddComment}>
         <input type="text" name="comment" />

@@ -1,18 +1,21 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
 import { selectAllBlogs } from '../reducers/blogsReducer'
+import TextLink from './styled/TextLink'
 
 const Blogs = () => {
   const blogs = useSelector(selectAllBlogs)
 
   return (
-    <>
-      {blogs
-        .sort(byLikesDescending)
-        .map(blog => <div key={blog.id}><Link to={`/blogs/${blog.id}`}>{blog.title}</Link></div>)
-      }
-    </>
+    <div>
+      <h2 style={{ marginBottom: '0.5em' }}>blogs</h2>
+      <ul>
+        {blogs
+          .sort(byLikesDescending)
+          .map(blog => <li key={blog.id}><TextLink href={`/blogs/${blog.id}`}>{blog.title}</TextLink></li>)
+        }
+      </ul>
+    </div>
   )
 }
 

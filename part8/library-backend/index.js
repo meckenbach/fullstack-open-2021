@@ -146,8 +146,10 @@ const resolvers = {
       const book = { ...args, id: uuid() }
       books = books.concat(book)
 
-      const author = { name: book.author, id: uuid() }
-      authors = authors.concat(author)
+      if (!authors.find(author => author.name === book.author)) {
+        const author = { name: book.author, id: uuid() }
+        authors = authors.concat(author)
+      }
 
       return book
     },

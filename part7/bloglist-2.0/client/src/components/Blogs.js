@@ -12,7 +12,7 @@ const Blogs = () => {
       <ul>
         {blogs
           .sort(byLikesDescending)
-          .map(blog => <li key={blog.id}><TextLink href={`/blogs/${blog.id}`}>{blog.title}</TextLink></li>)
+          .map(blog => <li key={blog.id}><TextLink to={`/blogs/${blog.id}`}>{blog.title}</TextLink></li>)
         }
       </ul>
     </div>

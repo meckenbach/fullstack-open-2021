@@ -1,5 +1,8 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
+import Form from './styled/Form'
+import TextField from './styled/TextField'
+import Button from './styled/Button'
 
 import { loginUser } from '../reducers/userReducer'
 
@@ -19,22 +22,11 @@ const LoginForm = () => {
   }
 
   return (
-    <div>
-      <h2>login to application</h2>
-      <form onSubmit={handleLogin}>
-        <div>
-          <label htmlFor="username">username</label>
-          <input id="username" onChange={(event) => setUsername(event.target.value)} required />
-        </div>
-        <div>
-          <label htmlFor="password">password</label>
-          <input id="password" onChange={(event) => setPassword(event.target.value)} required />
-        </div>
-        <div>
-          <button type="submit">login</button>
-        </div>
-      </form>
-    </div>
+    <Form legend="login to application" onSubmit={handleLogin}>
+      <TextField label="username" onChange={(event) => setUsername(event.target.value)} required />
+      <TextField label="password" onChange={(event) => setPassword(event.target.value)} required />
+      <Button type="submit">login</Button>
+    </Form>
   )
 }
 

@@ -1,29 +1,31 @@
 import React from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { NavLink } from 'react-router-dom'
-import { logoutUser } from '../reducers/userReducer'
+import PropTypes from 'prop-types'
 
-const selectUser = (state) => state.user
+import styled from 'styled-components'
 
-const Navbar = () => {
-  const dispatch = useDispatch()
-
-  const loggedInUser = useSelector(selectUser)
-
-  const handleLogout = (event) => {
-    event.preventDefault()
-    dispatch(logoutUser())
-  }
-
+const NavBar = ({ children }) => {
   return (
     <nav>
-      <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
-        <li style={{ display: 'inline-block', paddingRight: 5 }}><NavLink activeStyle={{ fontWeight: 'bold' }} to="/blogs">blogs</NavLink></li>
-        <li style={{ display: 'inline-block', paddingRight: 5 }}><NavLink activeStyle={{ fontWeight: 'bold' }} to="/users">users</NavLink></li>
-      </ul>
-      <p>{loggedInUser.name} logged in<button onClick={handleLogout}>logout</button></p>
+      <List>
+        {React.Children.map(children, (child) => <ListElement>{child}</ListElement>)}
+      </List>
     </nav>
   )
 }
 
-export default Navbar
+const List = styled.ul`
+  list-style-type: none;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+`
+
+NavBar.propTypes = {
+  children: PropTypes.arrayOf(PropTypes.element)
+}
+
+const ListElement = styled.li`
+  float: left;
+`
+
+export default NavBar

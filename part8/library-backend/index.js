@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const { ApolloServer, gql } = require('apollo-server')
+const { ApolloServer, UserInputError, gql } = require('apollo-server')
 const { v1: uuid } = require('uuid')
 const config = require('./util/config')
 const Book = require('./models/book')
@@ -178,7 +178,8 @@ const resolvers = {
     }
   },
   Mutation: {
-    addBook: async (root, { title, author: name, published, genres }) => {
+    addBook: async (root, args) => {
+      const { title, author: name, published, genres } = args
       try {
         let author = await Author.findOne({ name })
         if (!author) {
@@ -194,7 +195,14 @@ const resolvers = {
         await book.save()
         return book
       } catch (error) {
-        console.log(error.message)
+        switch (error.name) {
+          case 'ValidationError':
+            throw new UserInputError(error.message, {
+              invalidArgs: args
+            })
+          default:
+            console.log(error.message)
+        }
       }
     },
     editAuthor: async (root, { name, setBornTo: born }) => {

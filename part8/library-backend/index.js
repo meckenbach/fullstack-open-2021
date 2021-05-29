@@ -137,6 +137,26 @@ const typeDefs = gql`
 `
 
 const resolvers = {
+  Book: {
+    author: async (root) => {
+      try {
+        return await Author.findById(root.author)
+      } catch (error) {
+        console.log('error resolving author', error.message)
+      }
+    }
+  },
+  Author: {
+    bookCount: async (root) => {
+      try {
+        return await Book
+          .find({ author: root.id })
+          .countDocuments()
+      } catch (error) {
+        console.log(error.message)
+      }
+    }
+  },
   Query: {
     bookCount: async () => {
       const count = await Book.countDocuments({})
@@ -146,9 +166,11 @@ const resolvers = {
       const count = await Author.countDocuments({})
       return count
     },
-    allBooks: async (root, { author, genre }) => {
-      const books = await Book.find({})
-      return books
+    allBooks: async (root, { author, genre = null }) => {
+      if (!genre) {
+        return await Book.find({})
+      }
+      return await Book.find({ genres: { $in: [genre] } })
     },
     allAuthors: async () => {
       const authors = await Author.find({})
@@ -175,14 +197,12 @@ const resolvers = {
         console.log(error.message)
       }
     },
-    editAuthor: (root, args) => {
-      const authorToBeUpdated = authors.find(author => author.name === args.name)
-      if (authorToBeUpdated) {
-        const updatedAuthor = { ...authorToBeUpdated, born: args.setBornTo }
-        authors = authors.map(author => author.name === updatedAuthor.name ? updatedAuthor : author)
-        return updatedAuthor
+    editAuthor: async (root, { name, setBornTo: born }) => {
+      try {
+        return await Author.findOneAndUpdate({ name }, { born }, { new: true })
+      } catch (error) {
+        console.log(error.message)
       }
-      return null
     }
   }
 }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-const EditAuthorForm = ({ onSubmit }) => {
+const EditAuthorForm = ({ authors, onSubmit }) => {
   const [name, setName] = useState('')
   const [born, setBorn] = useState('')
 
@@ -13,7 +13,9 @@ const EditAuthorForm = ({ onSubmit }) => {
     <form onSubmit={handleSubmit}>
       <div>
         <label htmlFor="name">name</label>
-        <input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} />
+        <select id="name" value={name} onChange={(e) => setName(e.target.value)}>
+          {authors.map(author => <option key={author.name} value={author.name}>{author.name}</option>)}
+        </select>
       </div>
       <div>
         <label htmlFor="born">born</label>

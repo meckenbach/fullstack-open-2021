@@ -67,7 +67,7 @@ const Authors = (props) => {
         </tbody>
       </table>
       <h2>Set birthyear</h2>
-      <EditAuthorForm onSubmit={submit} />
+      <EditAuthorForm authors={authors} onSubmit={submit} />
     </div>
   )
 }

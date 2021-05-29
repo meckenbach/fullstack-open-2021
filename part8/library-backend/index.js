@@ -128,7 +128,6 @@ const resolvers = {
     authorCount: () => authors.length,
     allBooks: (root, { author, genre }) => {
       let filteredBooks = author ? books.filter(book => book.author === author) : books
-      console.log(filteredBooks)
       filteredBooks = genre ? filteredBooks.filter(book => book.genres.includes(genre)) : filteredBooks
       return filteredBooks
     },

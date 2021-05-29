@@ -1,5 +1,7 @@
 import React from 'react'
-import { gql, useQuery } from '@apollo/client'
+import { gql, useQuery, useMutation } from '@apollo/client'
+
+import EditAuthorForm from './EditAuthorForm'
 
 const ALL_AUTHORS = gql`
   query {
@@ -11,7 +13,23 @@ const ALL_AUTHORS = gql`
   }
 `
 
+const EDIT_AUTHOR = gql`
+  mutation EditAuthor($name: String!, $born: Int!) {
+    editAuthor(
+      name: $name,
+      setBornTo: $born
+    ) {
+      name,
+      born
+    }
+  }
+`
+
 const Authors = (props) => {
+  const [setBirthyear] = useMutation(EDIT_AUTHOR, {
+    refetchQueries: [{ query: ALL_AUTHORS }]
+  })
+
   const { loading, data } = useQuery(ALL_AUTHORS)
   if (loading) return <div>Loading...</div>
 
@@ -20,6 +38,10 @@ const Authors = (props) => {
   }
 
   const authors = data.allAuthors
+
+  const submit = ({ name, born }) => {
+    setBirthyear({ variables: { name, born: Number(born) } })
+  }
 
   return (
     <div>
@@ -44,7 +66,8 @@ const Authors = (props) => {
           )}
         </tbody>
       </table>
-
+      <h2>Set birthyear</h2>
+      <EditAuthorForm onSubmit={submit} />
     </div>
   )
 }

@@ -2,28 +2,7 @@ import React from 'react'
 import { gql, useQuery, useMutation } from '@apollo/client'
 
 import EditAuthorForm from './EditAuthorForm'
-
-const ALL_AUTHORS = gql`
-  query {
-    allAuthors {
-      name
-      born
-      bookCount
-    }
-  }
-`
-
-const EDIT_AUTHOR = gql`
-  mutation EditAuthor($name: String!, $born: Int!) {
-    editAuthor(
-      name: $name,
-      setBornTo: $born
-    ) {
-      name,
-      born
-    }
-  }
-`
+import { EDIT_AUTHOR, ALL_AUTHORS } from '../queries'
 
 const Authors = (props) => {
   const [setBirthyear] = useMutation(EDIT_AUTHOR, {

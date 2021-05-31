@@ -1,5 +1,5 @@
 import React from 'react'
-import { gql, useQuery, useMutation } from '@apollo/client'
+import { useQuery, useMutation } from '@apollo/client'
 
 import EditAuthorForm from './EditAuthorForm'
 import { EDIT_AUTHOR, ALL_AUTHORS } from '../queries'

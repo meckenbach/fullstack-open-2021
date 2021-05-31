@@ -10,28 +10,7 @@ const NewBook = ({ show, user }) => {
   const [genre, setGenre] = useState('')
   const [genres, setGenres] = useState([])
 
-  const updateCache = (store, response) => {
-    const { addBook: book } = response.data
-    const dataInStore = store.readQuery({ query: ALL_BOOKS })
-    store.writeQuery({
-      query: ALL_BOOKS,
-      data: {
-        ...dataInStore,
-        allBooks: [...dataInStore.allBooks, book]
-      }
-    })
-    if (book.genres.includes(user?.favoriteGenre)) {
-      const query = {
-        query: BOOKS_BY_GENRE,
-        variables: { genre: user.favoriteGenre }
-      }
-      const dataInStore = store.readQuery(query)
-      query.data = { ...dataInStore, allBooks: [...dataInStore.allBooks, book] }
-      store.writeQuery(query)
-    }
-  }
-
-  const [createBook] = useMutation(ADD_BOOK, { update: updateCache })
+  const [createBook] = useMutation(ADD_BOOK)
 
   if (!show) return null
 

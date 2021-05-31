@@ -6,10 +6,12 @@ import Books from './components/Books'
 import NewBook from './components/NewBook'
 import Login from './components/Login'
 import Recommend from './components/Recommend'
-import { useQuery, useSubscription } from '@apollo/client'
-import { BOOK_ADDED, ME } from './queries'
+import { useQuery, useSubscription, useApolloClient } from '@apollo/client'
+import { BOOK_ADDED, ME, ALL_BOOKS, BOOKS_BY_GENRE } from './queries'
 
 const App = () => {
+  const client = useApolloClient()
+
   const [page, setPage] = useState('authors')
   const [token, setToken] = useState(null)
   const [error, setError] = useState(null)
@@ -31,10 +33,31 @@ const App = () => {
     setToken(null)
   }
 
+  const updateCacheWith = (book) => {
+    const dataInStore = client.readQuery({ query: ALL_BOOKS })
+    client.writeQuery({
+      query: ALL_BOOKS,
+      data: {
+        ...dataInStore,
+        allBooks: [...dataInStore.allBooks, book]
+      }
+    })
+    if (book.genres.includes(user?.favoriteGenre)) {
+      const query = {
+        query: BOOKS_BY_GENRE,
+        variables: { genre: user.favoriteGenre }
+      }
+      const dataInStore = client.readQuery(query)
+      query.data = { ...dataInStore, allBooks: [...dataInStore.allBooks, book] }
+      client.writeQuery(query)
+    }
+  }
+
   useSubscription(BOOK_ADDED, {
     onSubscriptionData: ({ subscriptionData }) => {
       const book = subscriptionData.data.bookAdded
       window.alert(`book "${book.title}" added`)
+      updateCacheWith(book)
     }
   })
 

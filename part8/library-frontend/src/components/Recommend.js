@@ -1,17 +1,21 @@
-import React from 'react'
-import { useQuery } from '@apollo/client'
-import { ME, ALL_BOOKS } from '../queries'
+import React, { useEffect } from 'react'
+import { useLazyQuery } from '@apollo/client'
+import { BOOKS_BY_GENRE } from '../queries'
 
-const Recommend = (props) => {
-  const { loading: loadingAllBooks, data: dataAllBooks } = useQuery(ALL_BOOKS)
-  const { loading: loadingMe, data: dataMe } = useQuery(ME)
+const Recommend = ({ show, user }) => {
+  const [loadBooks, { called, loading, data }] = useLazyQuery(BOOKS_BY_GENRE)
 
-  if (loadingAllBooks || loadingMe) return <div>Loading</div>
+  useEffect(() => {
+    if (!called && user) {
+      loadBooks({ variables: { genre: user.favoriteGenre } })
+    }
+  }, [loadBooks, called, user])
 
-  if (!props.show) return null
+  if (called && loading) return <div>Loading...</div>
 
-  const { allBooks: books } = dataAllBooks
-  const { me: user } = dataMe
+  if (!show) return null
+
+  const books = data.allBooks
 
   return (
     <div>

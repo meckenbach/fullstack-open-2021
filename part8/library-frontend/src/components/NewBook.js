@@ -1,22 +1,39 @@
 import React, { useState } from 'react'
 import { useMutation, } from '@apollo/client'
 
-import { ADD_BOOK, ALL_BOOKS } from '../queries'
+import { ADD_BOOK, ALL_BOOKS, BOOKS_BY_GENRE } from '../queries'
 
-const NewBook = (props) => {
+const NewBook = ({ show, user }) => {
   const [title, setTitle] = useState('')
   const [author, setAuhtor] = useState('')
   const [published, setPublished] = useState('')
   const [genre, setGenre] = useState('')
   const [genres, setGenres] = useState([])
 
-  const [createBook] = useMutation(ADD_BOOK, {
-    refetchQueries: [{ query: ALL_BOOKS }]
-  })
-
-  if (!props.show) {
-    return null
+  const updateCache = (store, response) => {
+    const { addBook: book } = response.data
+    const dataInStore = store.readQuery({ query: ALL_BOOKS })
+    store.writeQuery({
+      query: ALL_BOOKS,
+      data: {
+        ...dataInStore,
+        allBooks: [...dataInStore.allBooks, book]
+      }
+    })
+    if (book.genres.includes(user?.favoriteGenre)) {
+      const query = {
+        query: BOOKS_BY_GENRE,
+        variables: { genre: user.favoriteGenre }
+      }
+      const dataInStore = store.readQuery(query)
+      query.data = { ...dataInStore, allBooks: [...dataInStore.allBooks, book] }
+      store.writeQuery(query)
+    }
   }
+
+  const [createBook] = useMutation(ADD_BOOK, { update: updateCache })
+
+  if (!show) return null
 
   const submit = async (event) => {
     event.preventDefault()

@@ -71,6 +71,7 @@ const App = () => {
 
       <NewBook
         show={page === 'add'}
+        user={user}
       />
 
       <Recommend

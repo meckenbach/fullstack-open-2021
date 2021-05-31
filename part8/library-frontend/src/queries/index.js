@@ -13,6 +13,15 @@ const BOOK_DETAILS = gql`
   }
 `
 
+export const BOOK_ADDED = gql`
+  subscription {
+    bookAdded {
+      ...BookDetails
+    }
+  }
+  ${BOOK_DETAILS}
+`
+
 const AUTHOR_DETAILS = gql`
   fragment AuthorDetails on Author {
     name

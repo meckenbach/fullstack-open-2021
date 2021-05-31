@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const { ApolloServer, UserInputError, gql, AuthenticationError } = require('apollo-server')
+const { ApolloServer, UserInputError, gql, AuthenticationError, PubSub } = require('apollo-server')
 const { v1: uuid } = require('uuid')
 const jwt = require('jsonwebtoken')
 
@@ -91,6 +91,8 @@ let books = [
   },
 ]
 
+const pubsub = new PubSub()
+
 console.log('connecting to', config.MONGODB_URI)
 
 mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true, useFindAndModify: false, useCreateIndex: true, useUnifiedTopology: true })
@@ -158,6 +160,10 @@ const typeDefs = gql`
   type Token {
     value: String!
   }
+
+  type Subscription {
+    bookAdded: Book!
+  }
 `
 
 const resolvers = {
@@ -224,6 +230,7 @@ const resolvers = {
           genres
         })
         await book.save()
+        pubsub.publish('BOOK_ADDED', { bookAdded: book })
         return book
       } catch (error) {
         switch (error.name) {
@@ -277,29 +284,39 @@ const resolvers = {
 
       return { value: jwt.sign(userForToken, config.SECRET) }
     }
+  },
+  Subscription: {
+    bookAdded: {
+      subscribe: () => pubsub.asyncIterator(['BOOK_ADDED'])
+    }
   }
 }
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: async ({ req }) => {
-    const auth = req.headers?.authorization
-    if (auth && auth.startsWith('bearer ')) {
-      const decodedToken = jwt.verify(
-        auth.substring(7),
-        config.SECRET
-      )
-      try {
-        const currentUser = await User.findById(decodedToken.id)
-        return { currentUser }
-      } catch (error) {
-        console.log(error.message)
+  context: async ({ req, connection }) => {
+    if (connection) {
+      return connection.context
+    } else {
+      const auth = req.headers?.authorization
+      if (auth && auth.startsWith('bearer ')) {
+        const decodedToken = jwt.verify(
+          auth.substring(7),
+          config.SECRET
+        )
+        try {
+          const currentUser = await User.findById(decodedToken.id)
+          return { currentUser }
+        } catch (error) {
+          console.log(error.message)
+        }
       }
     }
   }
 })
 
-server.listen().then(({ url }) => {
+server.listen().then(({ url, subscriptionsUrl }) => {
   console.log(`Server ready at ${url}`)
+  console.log(`Subscription ready at ${subscriptionsUrl}`)
 })

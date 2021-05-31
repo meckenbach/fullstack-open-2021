@@ -32,6 +32,7 @@ export const ALL_BOOKS = gql`
       }
       published
       genres
+      id
     }
   }
 `
@@ -62,6 +63,15 @@ export const LOGIN = gql`
       password: $password
     ) {
       value
+    }
+  }
+`
+
+export const ME = gql`
+  query {
+    me {
+      username
+      favoriteGenre
     }
   }
 `

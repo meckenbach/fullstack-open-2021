@@ -265,21 +265,17 @@ const resolvers = {
     login: async (root, args) => {
       const { username, password } = args
 
-      try {
-        const user = await User.findOne({ username })
-        if (!user || password !== 's3cr3t') {
-          throw new UserInputError('wrong credentials')
-        }
-
-        const userForToken = {
-          username,
-          id: user._id
-        }
-
-        return { value: jwt.sign(userForToken, config.SECRET) }
-      } catch (error) {
-        console.log(error)
+      const user = await User.findOne({ username })
+      if (!user || password !== 's3cr3t') {
+        throw new UserInputError('wrong credentials')
       }
+
+      const userForToken = {
+        username,
+        id: user._id
+      }
+
+      return { value: jwt.sign(userForToken, config.SECRET) }
     }
   }
 }

@@ -1,4 +1,4 @@
-const calculateBmi = (height: number, weight: number) => {
+const calculateBmi = (height: number, weight: number): string => {
   height = height / 100;
   const bmi = weight / (height * height);
 

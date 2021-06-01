@@ -2,6 +2,8 @@ const mongoose = require('mongoose')
 const { ApolloServer, UserInputError, gql, AuthenticationError, PubSub } = require('apollo-server')
 const { v1: uuid } = require('uuid')
 const jwt = require('jsonwebtoken')
+const DataLoader = require('dataloader')
+const { keyBy } = require('lodash/fp')
 
 const config = require('./util/config')
 const Book = require('./models/book')
@@ -103,6 +105,8 @@ mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true, useFindAndModify: 
     console.log('error connecting to database', error)
   })
 
+mongoose.set('debug', true)
+
 const typeDefs = gql`
   type Author {
     name: String!
@@ -170,6 +174,7 @@ const resolvers = {
   Book: {
     author: async (root) => {
       try {
+        console.log('Author.findById')
         return await Author.findById(root.author)
       } catch (error) {
         console.log('error resolving author', error.message)
@@ -177,11 +182,9 @@ const resolvers = {
     }
   },
   Author: {
-    bookCount: async (root) => {
+    bookCount: async (root, __, { loaders }) => {
       try {
-        return await Book
-          .find({ author: root.id })
-          .countDocuments()
+        return await loaders.bookCountLoader.load(root.id)
       } catch (error) {
         console.log(error.message)
       }
@@ -198,11 +201,16 @@ const resolvers = {
     },
     allBooks: async (root, { author, genre = null }) => {
       if (!genre) {
+        console.log('Book.find_v1')
         return await Book.find({})
       }
+      console.log('Book.find_v2')
+
       return await Book.find({ genres: { $in: [genre] } })
     },
     allAuthors: async () => {
+      console.log('Author.find')
+
       const authors = await Author.find({})
       return authors
     },
@@ -218,6 +226,7 @@ const resolvers = {
 
       const { title, author: name, published, genres } = args
       try {
+        console.log('Author.findOne')
         let author = await Author.findOne({ name })
         if (!author) {
           author = new Author({ name })
@@ -249,6 +258,7 @@ const resolvers = {
       }
 
       try {
+        console.log('Author.findOneAndUpdate')
         return await Author.findOneAndUpdate({ name }, { born }, { new: true })
       } catch (error) {
         console.log(error.message)
@@ -271,7 +281,6 @@ const resolvers = {
     },
     login: async (root, args) => {
       const { username, password } = args
-
       const user = await User.findOne({ username })
       if (!user || password !== 's3cr3t') {
         throw new UserInputError('wrong credentials')
@@ -292,25 +301,46 @@ const resolvers = {
   }
 }
 
+const batchGetBookCount = async (authors) => {
+  authors = authors.map(author => mongoose.Types.ObjectId(author))
+  const bookCounts = await Book.aggregate([
+    { $match: { author: { $in: authors } } },
+    {
+      $group: {
+        _id: '$author',
+        count: { $sum: 1 }
+      }
+    }
+  ])
+  const bookCountByAuthor = keyBy('_id', bookCounts)
+  return authors.map(author => bookCountByAuthor[author]?.count || 0)
+}
+
+
 const server = new ApolloServer({
   typeDefs,
   resolvers,
   context: async ({ req, connection }) => {
     if (connection) {
       return connection.context
-    } else {
-      const auth = req.headers?.authorization
-      if (auth && auth.startsWith('bearer ')) {
-        const decodedToken = jwt.verify(
-          auth.substring(7),
-          config.SECRET
-        )
-        try {
-          const currentUser = await User.findById(decodedToken.id)
-          return { currentUser }
-        } catch (error) {
-          console.log(error.message)
-        }
+    }
+    let currentUser = null
+    const auth = req.headers?.authorization
+    if (auth && auth.startsWith('bearer ')) {
+      const decodedToken = jwt.verify(
+        auth.substring(7),
+        config.SECRET
+      )
+      try {
+        currentUser = await User.findById(decodedToken.id)
+      } catch (error) {
+        console.log(error.message)
+      }
+    }
+    return {
+      currentUser,
+      loaders: {
+        bookCountLoader: new DataLoader(batchGetBookCount)
       }
     }
   }

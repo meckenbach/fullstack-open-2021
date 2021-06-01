@@ -72,6 +72,6 @@ try {
   const [dailyExerciseHours, target] = parseArguments(process.argv);
   console.log(calculateExercises(dailyExerciseHours, target));
 } catch (error) {
-  console.log('Error:', error.message);
+  if (error instanceof Error) console.log('Error:', error.message);
 }
 

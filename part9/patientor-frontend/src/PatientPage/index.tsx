@@ -4,7 +4,7 @@ import { Container, Header, Icon, Loader, SemanticICONS  } from "semantic-ui-rea
 import { useParams } from "react-router-dom";
 import { apiBaseUrl } from "../constants";
 import { Patient } from "../types";
-import { useStateValue } from "../state";
+import { setPatient, useStateValue } from "../state";
 
 
 const PatientPage = () => {
@@ -15,7 +15,7 @@ const PatientPage = () => {
   React.useEffect(() => {
     const fetchPatient = async () => {
       const { data: patientFromApi } = await axios.get<Patient>(`${apiBaseUrl}/patients/${id}`);
-      dispatch({ type: "SET_PATIENT", payload: patientFromApi});
+      dispatch(setPatient(patientFromApi));
     };
     if (!patient || patient.id !== id) void fetchPatient();
   });

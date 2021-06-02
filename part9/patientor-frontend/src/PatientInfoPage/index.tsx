@@ -7,7 +7,7 @@ import { Patient } from "../types";
 import { setPatient, useStateValue } from "../state";
 
 
-const PatientPage = () => {
+const PatientInfoPage = () => {
   const { id } = useParams<{ id: string }>();
 
   const [{ patient }, dispatch] = useStateValue();
@@ -39,4 +39,4 @@ const PatientPage = () => {
   );
 };
 
-export default PatientPage;
+export default PatientInfoPage;

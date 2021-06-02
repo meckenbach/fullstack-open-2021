@@ -1,8 +1,6 @@
-import express, { Request } from 'express';
-import { Patient, NewPatient } from '../types';
+import express from 'express';
 import patientsService from '../services/patientsService';
-import { validate, ValidationError }  from 'jsonschema';
-import NewPatientSchema from '../schemas/NewPatient.json';
+import { validateNewEntry, validateNewPatient } from '../validators';
 
 const route = express.Router();
 
@@ -10,23 +8,20 @@ route.get('/', (_req, res) => {
   res.json(patientsService.getNonSensitivePatients());
 });
 
-interface ErrorResponse {
-  error: string
-}
+// interface ErrorResponse {
+//   error: string
+// }
 
-route.post('/', (req: Request<unknown, Patient | ErrorResponse, NewPatient>, res) => {
-  try {
-    validate(req.body, NewPatientSchema, { throwError: true });
+route.post('/', (req, res) => {
+  if (validateNewPatient(req.body)) {
     const { name, dateOfBirth, gender, ssn, occupation, entries } = req.body;
     const addedPatient = patientsService.addPatient(name, gender, occupation, entries, dateOfBirth, ssn);
     res.json(addedPatient);
-  } catch (err) {
-    if (err instanceof ValidationError) {
-      res
-        .status(400)
-        .json({ error: `Incorrect or missing field: ${err.argument}`});
-    }
-  } 
+  } else {
+    res
+      .status(400)
+      .json({ error: "Incorrect or missing field"});
+  }
 });
 
 route.get('/:id', (req, res) => {
@@ -35,6 +30,22 @@ route.get('/:id', (req, res) => {
   patient
     ? res.json(patient)
     : res.status(404).end();
+});
+
+route.post('/:id/entries', (req, res) => {
+  const patiendId = req.params.id;
+  if (validateNewEntry(req.body)) {
+    const newEntry = req.body;
+    const addedEntry = patientsService.addEntry(patiendId, newEntry);
+    addedEntry
+      ? res.json(addedEntry)
+      : res.status(404).end();
+  } else {
+    console.log(validateNewEntry.errors);
+    res
+      .status(400)
+      .json({ error: "Incorrect or missing field"});
+  }
 });
 
 

@@ -8,6 +8,7 @@
     "lint": "eslint --ext .ts .",
     "start": "node build/index.js",
     "dev": "ts-node-dev src/index.ts",
+    "schema": "typescript-json-schema src/types.ts NewPatient --required --out src/schemas/NewPatient.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

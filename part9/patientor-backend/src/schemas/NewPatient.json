@@ -1,6 +1,21 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "definitions": {
+        "Discharge": {
+            "properties": {
+                "criteria": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "criteria",
+                "date"
+            ],
+            "type": "object"
+        },
         "Gender": {
             "enum": [
                 "female",
@@ -8,11 +23,174 @@
                 "other"
             ],
             "type": "string"
+        },
+        "HealthCheckEntry": {
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "diagnosisCodes": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "healthCheckRating": {
+                    "$ref": "#/definitions/HealthCheckRating"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "specialist": {
+                    "type": "string"
+                },
+                "type": {
+                    "enum": [
+                        "HealthCheck"
+                    ],
+                    "type": "string"
+                }
+            },
+            "required": [
+                "date",
+                "description",
+                "healthCheckRating",
+                "id",
+                "specialist",
+                "type"
+            ],
+            "type": "object"
+        },
+        "HealthCheckRating": {
+            "enum": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "type": "number"
+        },
+        "HosipitalEntry": {
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "diagnosisCodes": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "discharge": {
+                    "$ref": "#/definitions/Discharge"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "specialist": {
+                    "type": "string"
+                },
+                "type": {
+                    "enum": [
+                        "Hospital"
+                    ],
+                    "type": "string"
+                }
+            },
+            "required": [
+                "date",
+                "description",
+                "discharge",
+                "id",
+                "specialist",
+                "type"
+            ],
+            "type": "object"
+        },
+        "OccupationalHealthcareEntry": {
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "diagnosisCodes": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "employerName": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "sickLeave": {
+                    "$ref": "#/definitions/SickLeave"
+                },
+                "specialist": {
+                    "type": "string"
+                },
+                "type": {
+                    "enum": [
+                        "OccupationalHealthcare"
+                    ],
+                    "type": "string"
+                }
+            },
+            "required": [
+                "date",
+                "description",
+                "employerName",
+                "id",
+                "specialist",
+                "type"
+            ],
+            "type": "object"
+        },
+        "SickLeave": {
+            "properties": {
+                "endDate": {
+                    "type": "string"
+                },
+                "startDate": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "endDate",
+                "startDate"
+            ],
+            "type": "object"
         }
     },
     "properties": {
         "dateOfBirth": {
             "type": "string"
+        },
+        "entries": {
+            "items": {
+                "anyOf": [
+                    {
+                        "$ref": "#/definitions/HealthCheckEntry"
+                    },
+                    {
+                        "$ref": "#/definitions/OccupationalHealthcareEntry"
+                    },
+                    {
+                        "$ref": "#/definitions/HosipitalEntry"
+                    }
+                ]
+            },
+            "type": "array"
         },
         "gender": {
             "$ref": "#/definitions/Gender"
@@ -27,12 +205,12 @@
             "type": "string"
         }
     },
-    "type": "object",
     "required": [
-        "dateOfBirth",
+        "entries",
         "gender",
         "name",
-        "occupation",
-        "ssn"
-    ]
+        "occupation"
+    ],
+    "type": "object"
 }
+

@@ -18,7 +18,7 @@ route.post('/', (req: Request<unknown, Patient | ErrorResponse, NewPatient>, res
   try {
     validate(req.body, NewPatientSchema, { throwError: true });
     const { name, dateOfBirth, gender, ssn, occupation, entries } = req.body;
-    const addedPatient = patientsService.addPatient(name, gender, dateOfBirth, ssn, occupation, entries);
+    const addedPatient = patientsService.addPatient(name, gender, occupation, entries, dateOfBirth, ssn);
     res.json(addedPatient);
   } catch (err) {
     if (err instanceof ValidationError) {

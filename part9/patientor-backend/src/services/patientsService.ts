@@ -1,17 +1,17 @@
 import { omit } from 'lodash/fp';
 import { v1 as uuid } from 'uuid';
-import patients from '../../data/patients.json';
-import { Patient, NonSensitivePatient, Gender, Entry } from '../types';
+import patients from '../../data/patients';
+import { Patient, PublicPatient, Gender, Entry } from '../types';
 
 const getPatients = (): Patient[] => {
-  return patients as Patient[];
+  return patients ;
 };
 
-const getNonSensitivePatients = (): NonSensitivePatient[] => {
-  return patients.map(omit(['ssn'])) as NonSensitivePatient[];
+const getNonSensitivePatients = (): PublicPatient[] => {
+  return patients.map(omit(['ssn'])) as PublicPatient[];
 };
 
-const addPatient = (name: string, gender: Gender, dateOfBirth: string, ssn: string, occupation: string, entries: Entry[]) => {
+const addPatient = (name: string, gender: Gender, occupation: string, entries: Entry[], dateOfBirth?: string, ssn?: string): Patient => {
   const id = uuid() ;
   const newPatient = {
     id,
@@ -27,7 +27,7 @@ const addPatient = (name: string, gender: Gender, dateOfBirth: string, ssn: stri
 };
 
 const getPatientById = (id: string): Patient | undefined => {
-  return (patients as Patient[]).find(patient => patient.id === id);
+  return patients.find(patient => patient.id === id);
 };
 
 export default {

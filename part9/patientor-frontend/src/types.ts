@@ -46,12 +46,12 @@ export interface Discharge {
   criteria: string;
 }
 
-export interface HosipitalEntry extends BaseEntry {
+export interface HospitalEntry extends BaseEntry {
   type: "Hospital";
   discharge: Discharge;
 }
 
-export type Entry = HealthCheckEntry | OccupationalHealthcareEntry | HosipitalEntry;
+export type Entry = HospitalEntry | OccupationalHealthcareEntry | HealthCheckEntry;
 
 export interface Patient {
   id: string;

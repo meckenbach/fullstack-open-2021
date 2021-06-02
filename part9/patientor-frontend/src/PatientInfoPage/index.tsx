@@ -1,9 +1,9 @@
 import axios from "axios";
 import React from "react";
-import { Container, Header, Icon, Loader, SemanticICONS  } from "semantic-ui-react";
+import { Container, Header, Icon, Loader, SemanticICONS, Segment, Divider, List } from "semantic-ui-react";
 import { useParams } from "react-router-dom";
 import { apiBaseUrl } from "../constants";
-import { Patient } from "../types";
+import { Patient, Entry } from "../types";
 import { setPatient, useStateValue } from "../state";
 
 
@@ -28,12 +28,31 @@ const PatientInfoPage = () => {
     "other": "genderless"
   }[patient.gender] as SemanticICONS;
 
+  const diagnosisCodesList = (entry: Entry) => {
+    if (!entry.diagnosisCodes) return null;
+    return (
+      <List bulleted>
+        {entry.diagnosisCodes.map(code => <List.Item key={code}>{code}</List.Item>)}
+      </List>
+    );
+  };
+
   return (
     <Container>
       <Header as="h2">{patient.name}<Icon name={iconName} /></Header>
       <Container>
         <div>ssn: {patient.ssn}</div>
         <div>occupation: {patient.occupation}</div>
+      </Container>
+      <Divider />
+      <Container>
+        <Header as="h3">Entries:</Header>
+        <>{patient.entries.map(entry => (
+          <Segment key={entry.id}>
+            {entry.date} <em>{entry.description}</em>
+            {diagnosisCodesList(entry)}
+          </Segment>
+        ))}</>
       </Container>
     </Container>
   );

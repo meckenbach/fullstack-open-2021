@@ -8,10 +8,6 @@ route.get('/', (_req, res) => {
   res.json(patientsService.getNonSensitivePatients());
 });
 
-// interface ErrorResponse {
-//   error: string
-// }
-
 route.post('/', (req, res) => {
   if (validateNewPatient(req.body)) {
     const { name, dateOfBirth, gender, ssn, occupation, entries } = req.body;
@@ -41,12 +37,10 @@ route.post('/:id/entries', (req, res) => {
       ? res.json(addedEntry)
       : res.status(404).end();
   } else {
-    console.log(validateNewEntry.errors);
     res
       .status(400)
       .json({ error: "Incorrect or missing field"});
   }
 });
-
 
 export default route;

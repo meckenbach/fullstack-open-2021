@@ -1,4 +1,4 @@
-import React from "react";
+import React, { PropsWithChildren } from "react";
 import { ErrorMessage, Field, FieldProps, FormikProps } from "formik";
 import { Dropdown, DropdownProps, Form } from "semantic-ui-react";
 import { Diagnosis, Gender } from "../types";
@@ -10,17 +10,13 @@ export type GenderOption = {
 };
 
 // props for select field component
-type SelectFieldProps = {
+type SelectFieldProps<T> = {
   name: string;
-  label: string;
-  options: GenderOption[];
+  label: string; 
+  options: Array<T>;
 };
 
-export const SelectField = ({
-  name,
-  label,
-  options
-}: SelectFieldProps) => (
+export const SelectField = <T extends { label: string, value: string}>({ name, label, options }: PropsWithChildren<SelectFieldProps<T>>) => (
   <Form.Field>
     <label>{label}</label>
     <Field as="select" name={name} className="ui dropdown">

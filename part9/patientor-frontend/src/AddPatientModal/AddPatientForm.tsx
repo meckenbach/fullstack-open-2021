@@ -78,7 +78,7 @@ export const AddPatientForm = ({ onSubmit, onCancel } : Props ) => {
               name="occupation"
               component={TextField}
             />
-            <SelectField
+            <SelectField<GenderOption>
               label="Gender"
               name="gender"
               options={genderOptions}

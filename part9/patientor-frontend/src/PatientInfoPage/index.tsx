@@ -1,6 +1,6 @@
 import axios from "axios";
 import React from "react";
-import { Button, Container, Header, Icon, Loader, SemanticICONS, Divider } from "semantic-ui-react";
+import { Button, Divider, Header, Icon, Loader, SemanticICONS } from "semantic-ui-react";
 import { useParams } from "react-router-dom";
 import AddEntryModal from '../AddEntryModal';
 import { apiBaseUrl } from "../constants";
@@ -60,24 +60,28 @@ const PatientInfoPage = (): JSX.Element => {
   return (
     <div className="App">
       <Header as="h2">{patient.name}<Icon name={iconName} /></Header>
-      <Container>
-        <div>ssn: {patient.ssn}</div>
-        <div>occupation: {patient.occupation}</div>
-      </Container>
+      <p>
+        <div>
+          <span style={{ display: "inline-block", width: "100px", fontWeight: 600}}>SSN:</span><span>{patient.ssn}</span>
+        </div>
+        <div>
+          <span style={{ display: "inline-block", width: "100px", fontWeight: 600}}>Occupation:</span><span>{patient.occupation}</span>
+        </div>
+      </p>
       <Divider />
-      <Container>
-        <Header as="h3">Entries:</Header>
+      <p> 
+        <Header as="h3">Entries</Header>
         <>
           {patient.entries.map(entry => <EntryDetails key={entry.id} entry={entry} />)}
         </>
-      </Container>
+      </p>
       <AddEntryModal
         modalOpen={modalOpen}
         onSubmit={submitNewEntry}
         error={error}
         onClose={closeModal}
       />
-      <Button onClick={() => openModal()}>Add New Entry</Button>
+      <Button onClick={openModal}>Add New Entry</Button>
     </div>
   );
 };

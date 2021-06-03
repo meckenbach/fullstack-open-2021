@@ -60,21 +60,21 @@ const PatientInfoPage = (): JSX.Element => {
   return (
     <div className="App">
       <Header as="h2">{patient.name}<Icon name={iconName} /></Header>
-      <p>
+      <div>
         <div>
           <span style={{ display: "inline-block", width: "100px", fontWeight: 600}}>SSN:</span><span>{patient.ssn}</span>
         </div>
         <div>
           <span style={{ display: "inline-block", width: "100px", fontWeight: 600}}>Occupation:</span><span>{patient.occupation}</span>
         </div>
-      </p>
+      </div>
       <Divider />
-      <p> 
+      <div> 
         <Header as="h3">Entries</Header>
         <>
           {patient.entries.map(entry => <EntryDetails key={entry.id} entry={entry} />)}
         </>
-      </p>
+      </div>
       <AddEntryModal
         modalOpen={modalOpen}
         onSubmit={submitNewEntry}

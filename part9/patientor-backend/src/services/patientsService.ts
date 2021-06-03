@@ -11,7 +11,7 @@ const getNonSensitivePatients = (): PublicPatient[] => {
   return patients.map(omit(['ssn'])) as PublicPatient[];
 };
 
-const addPatient = (name: string, gender: Gender, occupation: string, entries: Entry[], dateOfBirth?: string, ssn?: string): Patient => {
+const addPatient = (name: string, gender: Gender, occupation: string, entries: Entry[] = [], dateOfBirth?: string, ssn?: string): Patient => {
   const id = uuid() ;
   const newPatient = {
     id,
@@ -37,7 +37,7 @@ const addEntry = (patiendId: string, entry: NewEntry): Entry | undefined => {
   };
   const patient = getPatientById(patiendId);
   if (patient) {
-    patient.entries.push();
+    patient.entries.push(newEntry);
     return newEntry;
   } 
   return undefined;

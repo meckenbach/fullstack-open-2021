@@ -10,6 +10,12 @@ export enum Gender {
   Other = "other"
 }
 
+export enum EntryType {
+  "HealthCheck",
+  "OccupationalHealthcare",
+  "Hospital"
+}
+
 export interface BaseEntry {
   id: string;
   date: string;
